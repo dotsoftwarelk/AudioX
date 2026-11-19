@@ -85,4 +85,8 @@ template <class T, std::size_t Capacity> class SpscRingBuffer final
     std::array<T, Capacity> slots_{};
 };
 
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+
 } // namespace axf::core

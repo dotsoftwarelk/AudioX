@@ -85,24 +85,45 @@ int selfTest()
 
 int main(int argc, char** argv)
 {
+    enum class Action
+    {
+        Info,
+        SelfTest,
+        Help,
+    };
+
+    Action action = Action::Info;
     for (int i = 1; i < argc; ++i)
     {
         const std::string_view argument{argv[i]};
         if (argument == "--self-test")
         {
-            return selfTest();
+            action = Action::SelfTest;
         }
-        if (argument == "--info")
+        else if (argument == "--info")
         {
-            return printInfo();
+            action = Action::Info;
         }
-        if (argument == "--help" || argument == "-h")
+        else if (argument == "--help" || argument == "-h")
         {
-            std::cout << "usage: audiox [--info] [--self-test] [--help]\n";
-            return 0;
+            action = Action::Help;
         }
-        std::cerr << "unknown argument: " << argument << "\n";
-        return 2;
+        else
+        {
+            std::cerr << "unknown argument: " << argument << '\n';
+            return 2;
+        }
     }
-    return printInfo();
+
+    switch (action)
+    {
+    case Action::SelfTest:
+        return selfTest();
+    case Action::Info:
+        return printInfo();
+    case Action::Help:
+        std::cout << "usage: audiox [--info] [--self-test] [--help]\n";
+        return 0;
+    }
+    return 0;
 }
