@@ -176,3 +176,17 @@ TEST(DeviceManager, WasapiBackendUnavailableOffWindows)
     EXPECT_EQ(devices::createWasapiBackend(), nullptr);
 }
 #endif
+
+#if defined(AXF_HAS_ASIO) && AXF_HAS_ASIO
+TEST(DeviceManager, AsioBackendAvailableWhenBuiltWithSdk)
+{
+    auto backend = devices::createAsioBackend();
+    ASSERT_NE(backend, nullptr);
+    EXPECT_EQ(backend->backend(), devices::Backend::Asio);
+}
+#else
+TEST(DeviceManager, AsioBackendUnavailableWithoutSdk)
+{
+    EXPECT_EQ(devices::createAsioBackend(), nullptr);
+}
+#endif

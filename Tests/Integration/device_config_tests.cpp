@@ -19,6 +19,23 @@ TEST(DeviceConfig, ValidConfigurations)
     EXPECT_EQ(devices::validateWasapiConfig(config).error().code, core::ErrorCode::InvalidArgument);
 }
 
+TEST(DeviceConfig, AsioAllowsFullDuplex)
+{
+    devices::DeviceConfig config;
+    config.backend = devices::Backend::Asio;
+    config.inputChannels = 2;
+    config.outputChannels = 2;
+    EXPECT_TRUE(devices::validateAsioConfig(config).ok());
+
+    config.backend = devices::Backend::WasapiShared;
+    EXPECT_EQ(devices::validateAsioConfig(config).error().code, core::ErrorCode::InvalidArgument);
+
+    config = devices::DeviceConfig{};
+    config.backend = devices::Backend::Asio;
+    config.outputChannels = 513;
+    EXPECT_EQ(devices::validateAsioConfig(config).error().code, core::ErrorCode::OutOfRange);
+}
+
 TEST(DeviceConfig, RejectsInvalidSettings)
 {
     devices::DeviceConfig config;

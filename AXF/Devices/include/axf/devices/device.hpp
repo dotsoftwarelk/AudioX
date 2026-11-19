@@ -68,6 +68,11 @@ struct DeviceConfig final
 /// direction per device, at most two channels in exclusive mode.
 [[nodiscard]] AXF_API core::Result<void> validateWasapiConfig(const DeviceConfig& config) noexcept;
 
+/// Validates ASIO-specific restrictions without touching hardware. ASIO
+/// supports full duplex, but the framework only accepts 32-bit float channels
+/// and the generic power-of-two buffer-size contract.
+[[nodiscard]] AXF_API core::Result<void> validateAsioConfig(const DeviceConfig& config) noexcept;
+
 /// Called on the audio device thread. All real-time rules apply to the
 /// implementation of this callback: no allocation, locks, I/O or UI.
 class IAudioDeviceCallback

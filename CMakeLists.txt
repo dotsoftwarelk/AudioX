@@ -10,7 +10,24 @@ option(AXF_BUILD_TESTS "Build AXF test suite" ON)
 option(AXF_BUILD_APP "Build the AudioX DAW shell" ON)
 option(AXF_WERROR "Treat compiler warnings as errors" OFF)
 option(AXF_ENABLE_VST3 "Enable VST3 host module (requires user-supplied SDK)" OFF)
-option(AXF_ENABLE_ASIO "Enable ASIO backend (requires user-supplied SDK)" OFF)
+option(AXF_ENABLE_ASIO "Enable ASIO backend (requires the Steinberg ASIO SDK)" OFF)
+set(AXF_ASIO_SDK_ROOT "" CACHE PATH "Steinberg ASIO SDK root containing common/asio.h")
+
+if(AXF_ENABLE_ASIO)
+  if(NOT AXF_ASIO_SDK_ROOT AND DEFINED ENV{AXF_ASIO_SDK_ROOT})
+    set(AXF_ASIO_SDK_ROOT "$ENV{AXF_ASIO_SDK_ROOT}")
+  endif()
+  if(WIN32)
+    if(NOT EXISTS "${AXF_ASIO_SDK_ROOT}/common/asio.h")
+      message(FATAL_ERROR
+        "AXF_ENABLE_ASIO=ON requires AXF_ASIO_SDK_ROOT (or AXF_ASIO_SDK_ROOT env) "
+        "pointing at the Steinberg ASIO SDK. The SDK is never vendored into this repo.")
+    endif()
+  else()
+    message(STATUS "ASIO backend is Windows-only; disabling AXF_ENABLE_ASIO here")
+    set(AXF_ENABLE_ASIO OFF CACHE BOOL "" FORCE)
+  endif()
+endif()
 
 find_package(Threads REQUIRED)
 

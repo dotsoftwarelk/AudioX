@@ -69,6 +69,25 @@ core::Result<void> validateConfig(const DeviceConfig& config) noexcept
     return core::success();
 }
 
+core::Result<void> validateAsioConfig(const DeviceConfig& config) noexcept
+{
+    const auto validation = validateConfig(config);
+    if (!validation)
+    {
+        return validation.error();
+    }
+    if (config.backend != Backend::Asio)
+    {
+        return core::makeError(core::ErrorCode::InvalidArgument,
+                               "ASIO requires an ASIO backend selection");
+    }
+    if (config.inputChannels > 512 || config.outputChannels > 512)
+    {
+        return core::makeError(core::ErrorCode::OutOfRange, "ASIO channel count exceeds 512");
+    }
+    return core::success();
+}
+
 core::Result<void> validateWasapiConfig(const DeviceConfig& config) noexcept
 {
     const auto validation = validateConfig(config);

@@ -147,6 +147,15 @@ std::unique_ptr<IDeviceBackend> createWasapiBackend()
 #endif
 }
 
+std::unique_ptr<IDeviceBackend> createAsioBackend()
+{
+#if defined(AXF_HAS_ASIO) && defined(_WIN32)
+    return detail::createAsioBackendWindows();
+#else
+    return nullptr;
+#endif
+}
+
 } // namespace axf::devices
 
 #if !defined(_WIN32)
@@ -158,6 +167,11 @@ std::unique_ptr<IDeviceBackend> createWasapiBackendWindows()
 }
 
 std::unique_ptr<IDeviceBackend> createWasapiExclusiveBackendWindows()
+{
+    return nullptr;
+}
+
+std::unique_ptr<IDeviceBackend> createAsioBackendWindows()
 {
     return nullptr;
 }

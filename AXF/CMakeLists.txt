@@ -48,3 +48,27 @@ if(WIN32)
   target_compile_definitions(axf_devices PRIVATE AXF_HAS_WASAPI=1)
   target_link_libraries(axf_devices PRIVATE ole32 uuid)
 endif()
+
+if(WIN32 AND AXF_ENABLE_ASIO)
+  # The SDK is consumed from AXF_ASIO_SDK_ROOT and is never copied into the
+  # repository or installed with AXF. ASIO-enabled binaries inherit the SDK's
+  # GPLv3 option unless a separate Steinberg proprietary licence is obtained.
+  add_library(axf_asio_sdk STATIC
+    ${AXF_ASIO_SDK_ROOT}/common/asio.cpp
+    ${AXF_ASIO_SDK_ROOT}/common/combase.cpp
+    ${AXF_ASIO_SDK_ROOT}/host/asiodrivers.cpp
+    ${AXF_ASIO_SDK_ROOT}/host/pc/asiolist.cpp)
+  target_include_directories(axf_asio_sdk PUBLIC
+    ${AXF_ASIO_SDK_ROOT}/common
+    ${AXF_ASIO_SDK_ROOT}/host
+    ${AXF_ASIO_SDK_ROOT}/host/pc)
+  target_compile_features(axf_asio_sdk PUBLIC cxx_std_20)
+  if(MSVC)
+    target_compile_options(axf_asio_sdk PRIVATE /W0)
+  else()
+    target_compile_options(axf_asio_sdk PRIVATE -w)
+  endif()
+  target_link_libraries(axf_devices PRIVATE axf_asio_sdk ole32 advapi32)
+  target_sources(axf_devices PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Devices/src/asio_backend.cpp)
+endif()

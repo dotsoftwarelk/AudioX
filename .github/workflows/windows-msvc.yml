@@ -21,10 +21,19 @@ jobs:
       - name: Set up MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Download Steinberg ASIO SDK
+        run: |
+          $zip = "$env:RUNNER_TEMP\asio-sdk.zip"
+          $dir = "$env:RUNNER_TEMP\asio-sdk"
+          Invoke-WebRequest -Uri 'https://download.steinberg.net/sdk_downloads/ASIO-SDK_2.3.4_2025-10-15.zip' -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath $dir -Force
+          if (-not (Test-Path "$dir\ASIOSDK\common\asio.h")) { throw "ASIO SDK download failed" }
+          "AXF_ASIO_SDK_ROOT=$dir\ASIOSDK" >> $env:GITHUB_ENV
+
       - name: Configure
         # Ninja avoids pinning a Visual Studio generator version; the runner
         # image may ship VS 2022 or newer while MSVC remains the compiler.
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DAXF_BUILD_TESTS=ON -DAXF_BUILD_APP=ON -DAXF_WERROR=ON
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DAXF_BUILD_TESTS=ON -DAXF_BUILD_APP=ON -DAXF_WERROR=ON -DAXF_ENABLE_ASIO=ON
 
       - name: Build
         run: cmake --build build --parallel

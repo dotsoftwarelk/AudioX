@@ -16,6 +16,7 @@ namespace detail
 /// identical on every platform; returns nullptr when not compiled in.
 [[nodiscard]] AXF_API std::unique_ptr<IDeviceBackend> createWasapiBackendWindows();
 [[nodiscard]] AXF_API std::unique_ptr<IDeviceBackend> createWasapiExclusiveBackendWindows();
+[[nodiscard]] AXF_API std::unique_ptr<IDeviceBackend> createAsioBackendWindows();
 } // namespace detail
 
 /// Owns backends and provides a single discovery/opening entry point. All
@@ -58,5 +59,10 @@ class DeviceManager final : public IDeviceChangeListener
 /// Returns a real WASAPI backend on Windows, or nullptr on other platforms.
 /// A nullptr means the backend is unavailable; callers must handle it.
 [[nodiscard]] AXF_API std::unique_ptr<IDeviceBackend> createWasapiBackend();
+
+/// Returns a real ASIO backend on Windows when AXF is built with the Steinberg
+/// ASIO SDK, or nullptr otherwise. A nullptr means the backend is unavailable;
+/// callers must handle it.
+[[nodiscard]] AXF_API std::unique_ptr<IDeviceBackend> createAsioBackend();
 
 } // namespace axf::devices
