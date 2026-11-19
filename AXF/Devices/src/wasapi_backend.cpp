@@ -4,12 +4,14 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#ifndef INITGUID
+#define INITGUID
+#endif
 
 #include "axf/devices/device_manager.hpp"
 
 #include <audioclient.h>
 #include <functiondiscoverykeys_devpkey.h>
-#include <initguid.h>
 #include <mmdeviceapi.h>
 #include <windows.h>
 #include <wrl/client.h>
