@@ -404,13 +404,13 @@ class WasapiDevice final : public IAudioDevice
         if (config_.outputChannels > 0)
         {
             result =
-                client_->GetService(__uuidof(IAudioRenderClient), CLSCTX_ALL,
+                client_->GetService(__uuidof(IAudioRenderClient),
                                     reinterpret_cast<void**>(render_.ReleaseAndGetAddressOf()));
         }
         else
         {
             result =
-                client_->GetService(__uuidof(IAudioCaptureClient), CLSCTX_ALL,
+                client_->GetService(__uuidof(IAudioCaptureClient),
                                     reinterpret_cast<void**>(capture_.ReleaseAndGetAddressOf()));
         }
         if (FAILED(result))
