@@ -1,5 +1,6 @@
 #include "axf/audio/buffer.hpp"
 #include "axf/core/spsc_ring_buffer.hpp"
+#include "axf/dsp/biquad.hpp"
 #include "axf/dsp/utility.hpp"
 
 #include <chrono>
@@ -47,7 +48,30 @@ int main()
     const double framesPerSecond =
         dspSeconds > 0.0 ? static_cast<double>(kFrames * kIterations) / dspSeconds : 0.0;
 
-    std::printf("{\"spsc_ops_per_sec\": %.0f, \"gain_frames_per_sec\": %.0f, \"checksum\": %.3f}\n",
-                queueOpsPerSecond, framesPerSecond, static_cast<double>(checksum));
-    return queueOpsPerSecond > 0.0 && framesPerSecond > 0.0 ? 0 : 1;
+    const auto design = axf::dsp::designBiquad({}, 48000.0);
+    if (!design.ok())
+    {
+        return 1;
+    }
+    axf::dsp::BiquadProcessor biquad(design.value());
+    axf::audio::AudioBuffer filtered(1, kFrames);
+    filtered.fill(0.5F);
+    auto filteredView = axf::audio::makeView(filtered);
+    volatile float biquadChecksum = 0.0F;
+    const auto biquadStart = clock::now();
+    for (int i = 0; i < kIterations; ++i)
+    {
+        biquad.process(filteredView);
+        biquadChecksum += filtered.channelData(0)[kFrames - 1];
+    }
+    const auto biquadEnd = clock::now();
+    const double biquadSeconds = std::chrono::duration<double>(biquadEnd - biquadStart).count();
+    const double biquadFramesPerSecond =
+        biquadSeconds > 0.0 ? static_cast<double>(kFrames * kIterations) / biquadSeconds : 0.0;
+
+    std::printf("{\"spsc_ops_per_sec\": %.0f, \"gain_frames_per_sec\": %.0f, "
+                "\"biquad_frames_per_sec\": %.0f, \"checksum\": %.3f, \"biquad_checksum\": %.3f}\n",
+                queueOpsPerSecond, framesPerSecond, biquadFramesPerSecond,
+                static_cast<double>(checksum), static_cast<double>(biquadChecksum));
+    return queueOpsPerSecond > 0.0 && framesPerSecond > 0.0 && biquadFramesPerSecond > 0.0 ? 0 : 1;
 }

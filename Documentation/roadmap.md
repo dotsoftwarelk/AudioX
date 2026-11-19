@@ -7,7 +7,7 @@
 | 2 | Audio foundation: compiled graph, RT engine skeleton, buffers, scheduling | Done: 9 CPU test suites pass on GCC and MSVC Debug/Release (Actions run `44528029411`); ADR 0006 |
 | 3 | WASAPI device abstraction, shared/exclusive backends, enumeration, device→engine callbacks, disconnect recovery | Simulated tests and MSVC/GCC Debug+Release green (Actions `44532804371`); ADR 0007. **Awaiting** the hardware report in `Documentation/hardware/wasapi-test-plan.md` |
 | 3b | ASIO backend and device-format negotiation | Compatibility report with real ASIO drivers |
-| 4 | DSP catalogue with frequency-response/numerical tests | DSP verification report |
+| 4 | DSP catalogue: biquad LP/HP/peaking EQ, constant-power panner, numerical response tests | Simulated DSP verification report; ADR 0008. No listening or hardware claim |
 | 5 | VST3 host | Compatibility matrix on real plugins |
 | 6 | MIDI and media | Import/export round-trip tests |
 | 7 | GUI framework (Direct2D/DirectWrite) | Rendering and interaction tests |

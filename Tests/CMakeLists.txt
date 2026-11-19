@@ -17,7 +17,7 @@ axf_add_test(axf_core_tests
   Unit/thread_tests.cpp
   Unit/log_tests.cpp)
 axf_add_test(axf_audio_tests Unit/audio_tests.cpp Audio/buffer_tests.cpp)
-axf_add_test(axf_dsp_tests DSP/dsp_tests.cpp)
+axf_add_test(axf_dsp_tests DSP/dsp_tests.cpp DSP/biquad_tests.cpp DSP/panner_tests.cpp)
 axf_add_test(axf_midi_tests Unit/midi_tests.cpp)
 axf_add_test(axf_graph_tests Integration/graph_tests.cpp Integration/device_config_tests.cpp)
 axf_add_test(axf_platform_tests Platform/platform_tests.cpp Plugins/plugin_tests.cpp)
@@ -33,7 +33,7 @@ target_link_libraries(axf_rt_alloc_override PUBLIC AXF::Core)
 target_compile_options(axf_rt_alloc_override PRIVATE ${AXF_WARNING_FLAGS})
 
 axf_add_test(axf_rt_audit_tests Unit/rt_audit_tests.cpp
-  Integration/engine_audit_tests.cpp)
+  Integration/engine_audit_tests.cpp DSP/dsp_audit_tests.cpp)
 target_link_libraries(axf_rt_audit_tests PRIVATE axf_rt_alloc_override)
 
 axf_add_test(axf_engine_tests Integration/engine_tests.cpp)

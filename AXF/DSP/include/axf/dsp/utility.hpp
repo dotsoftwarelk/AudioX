@@ -6,9 +6,9 @@
 namespace axf::dsp
 {
 
-/// Minimal, allocation-free primitives used by Phase 2 integration tests.
-/// The full DSP catalogue (filters, EQ, compressor, limiter, effects) is
-/// specified for Phase 4.
+/// Minimal, allocation-free primitives. The Phase 4 catalogue adds biquad
+/// filters/EQ and constant-power panning; compressor, limiter and effects
+/// remain future work.
 AXF_API void fillSilence(audio::AudioBufferView& buffer) noexcept;
 AXF_API void applyGain(audio::AudioBufferView& buffer, float linearGain) noexcept;
 
