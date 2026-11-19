@@ -194,7 +194,7 @@ class AsioDevice final : public IAudioDevice
         return buffers_.size();
     }
 
-    AsioCallbacks* callbacks() noexcept
+    ASIOCallbacks* callbacks() noexcept
     {
         callbacks_.bufferSwitch = &AsioDevice::onBufferSwitch;
         callbacks_.sampleRateDidChange = &AsioDevice::onSampleRateDidChange;
