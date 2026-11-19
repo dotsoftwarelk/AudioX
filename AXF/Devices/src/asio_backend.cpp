@@ -13,6 +13,8 @@
 
 #include "axf/core/rt.hpp"
 
+#include <unknwn.h>
+
 #include <asiodrivers.h>
 #include <iasiodrv.h>
 
