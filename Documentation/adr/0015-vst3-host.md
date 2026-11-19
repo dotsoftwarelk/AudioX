@@ -1,6 +1,7 @@
 # ADR 0015 — Phase 5 VST3 host
 
-- Status: Accepted; host compiled and CPU-tested, plugin compatibility untested
+- Status: Accepted; host compiled, CPU-tested and smoke-tested with real
+  SDK example plug-ins; broad compatibility matrix untested
 - Date: 2026-11-19
 - Phase: 5
 - SDK: Steinberg VST3 SDK 3.8.1 (MIT licence), cloned by CI from
@@ -38,9 +39,12 @@ without vendoring proprietary code.
    preallocated pointer arrays, converts note-on/note-off/aftertouch MIDI into
    a preallocated VST3 `EventList`, and calls `IAudioProcessor::process()`.
    No allocation or parameter work occurs in the audio path.
-6. State is read/written through the SDK's `MemoryStream`; latency comes from
-   `getLatencySamples()`. `reset()` toggles `setProcessing` because VST3 has no
-   direct reset method.
+6. State is read/written through the SDK's `MemoryStream`. Component and
+   controller state are stored as separately length-prefixed sections with an
+   `AXS1` magic header: a single shared stream made real plug-ins fail to read
+   controller state. A missing or unsupported controller section is skipped on
+   restore. Latency comes from `getLatencySamples()`. `reset()` toggles
+   `setProcessing` because VST3 has no direct reset method.
 7. Public factory `createVst3Host()` returns `nullptr` when AXF is built
    without VST3, so consumers never depend on the SDK at compile time.
 
@@ -52,7 +56,11 @@ without vendoring proprietary code.
   32-bit float samples, note-on/off/aftertouch MIDI, no editor UI, no
   parameter automation, no note-expression or MIDI-CC-to-parameter mapping.
   Unsupported descriptors return errors instead of being silently accepted.
-- No real plugin binary was loaded in CI or the sandbox. Compatibility with
-  actual plugins, state stability across versions and UI behaviour require the
-  unexecuted checklist in `Documentation/hardware/vst3-test-plan.md`.
+- A real-plugin smoke test was executed locally against Steinberg SDK 3.8.1
+  binaries: `AGain Sample Accurate` passed unity-gain audio, finite-output and
+  state round-trip checks, and `ADelay` passed scan/create/process/state. This
+  is not a broad compatibility claim. The remaining matrix, long-duration run
+  and third-party plug-ins are still covered by the unexecuted checklist in
+  `Documentation/hardware/vst3-test-plan.md`. CI continues to skip the opt-in
+  test because no plug-in binary is installed on runners.
 - VST3 SDK 3.8+ is MIT-licensed; the SDK is not redistributed by AXF.

@@ -18,9 +18,12 @@
 - **The RT audit is diagnostic only.** It detects allocations on threads explicitly marked with `rt::ScopedAudioThread`; it does not prove the absence of locks, I/O or unbounded work, and the global override is test-only.
 - **Graph channel counts must match the engine configuration** at compile time; per-port channel negotiation is not implemented. MIDI connections are counted but not processed. Mixing has no clipping stage yet.
 - **DSP is limited** to silence, gain, biquad low-pass/high-pass/peaking EQ and constant-power panning. No compressor, limiter, convolution, reverb, resampling, oversampling or FFT yet. Biquad supports at most eight channels and coefficients are immutable; changing a filter requires republishing the graph. Frequency-response tests are numerical, not listening tests.
-- **VST3 is compiled but not plugin-verified.** Windows/Mac/Linux CI builds
-  the host and tests empty-directory scanning plus invalid descriptors, but no
-  real plugin binary was loaded. See `Documentation/hardware/vst3-test-plan.md`.
+- **VST3 has limited plugin verification.** CI builds the host and tests
+  empty-directory scanning plus invalid descriptors. A local opt-in smoke test
+  loaded and processed Steinberg SDK 3.8.1 `AGain Sample Accurate` and `ADelay`
+  binaries and caught a state-framing defect that is now fixed. Three-vendor
+  compatibility, instruments, editor UI and long-duration runs remain
+  untested. See `Documentation/hardware/vst3-test-plan.md`.
 - **VST3 hosting is deliberately narrow.** It supports the first audio
   input/output bus, 32-bit float samples, note-on/off/aftertouch MIDI and
   component/controller state blobs. There is no editor UI, parameter
@@ -35,6 +38,14 @@
   normally, as verified by the standalone consumer test.
 - **Device change notifications are not synchronised with engine reconfiguration.** Listeners receive a hint and must re-enumerate on the control thread.
 - **File I/O is limited** to 16-bit PCM RIFF/WAVE and SMF format 0. No 24-bit/float WAV, AIFF, FLAC, multi-track SMF export, SysEx or tempo-map export. SMF frames must align with the PPQ/tempo grid for exact round-trips.
+- **Recording is bounded and unconnected to a live device in CI.** The
+  preallocated recorder and device callback adapter are locally tested with a
+  fake callback and an RT-allocation check, but no real input device was
+  recorded. Over-capacity frames are counted as dropped, not wrapped.
+- **Automation, undo and autosave are control-thread only.** Linear
+  gain/pan lanes, whole-document snapshot undo and atomic autosave revisions
+  are locally tested but not yet wired into an interactive DAW UI or
+  verified in CI.
 - **GUI is not interactively verified.** A Win32/Direct2D/DirectWrite window and a portable scene graph exist, but no window was rendered in the sandbox. There is no input routing, high-DPI scaling, accessibility or animated layout. The application remains a diagnostic shell accepting `--info`, `--self-test`, `--list-devices`, `--help`.
 - **Static libraries only.** Shared-library export macros and ABI stability are future work.
 - **Benchmark numbers** were produced in a virtualised Linux sandbox and are not performance claims for Windows audio hardware.

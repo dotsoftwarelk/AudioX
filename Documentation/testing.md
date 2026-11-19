@@ -29,8 +29,8 @@ IDs: GCC `44549680971`, MSVC `44549681036`, Quality `44549680864`. Earlier run I
 | `axf_dsp_tests` | gain accuracy, channel integrity, denormal/NaN handling, biquad coefficient validation, Goertzel frequency response for LP/HP/peaking EQ, reset tail, constant-power panning |
 | `axf_midi_tests` | event encoding and bounded event buffer |
 | `axf_graph_tests` | validation, duplicate ports, cycle rejection, ordering, MIDI ports |
-| `axf_platform_tests` | version, media extensions, project format, plugin contract, VST3 empty-directory scan and invalid descriptor rejection, track/clip model, serialisation round-trip and corrupt-input rejection |
-| `axf_file_io_tests` | WAV 16-bit PCM stereo round-trip and invalid input; SMF format 0 event round-trip with VLQ deltas and invalid input |
+| `axf_platform_tests` | version, media extensions, project format, plugin contract, VST3 empty-directory scan and invalid descriptor rejection, track/clip model, serialisation round-trip and corrupt-input rejection, automation interpolation/round-trip/corrupt rejection, undo/redo snapshots, autosave recovery. Opt-in `Vst3RealPluginSmoke` loads a real `.vst3` binary when `AXF_VST3_PLUGIN_PATH` is set (see `Documentation/hardware/vst3-test-plan.md`) |
+| `axf_file_io_tests` | WAV 16-bit PCM stereo round-trip and invalid input; SMF format 0 event round-trip with VLQ deltas and invalid input; bounded RT-safe recording, overflow accounting and device callback forwarding |
 | `axf_gui_tests` | widget draw geometry, text, meter scaling, dirty invalidation, clip culling, vertical layout, non-Windows window stub |
 | `axf_devices_tests` | device config, ASIO validation/factory availability and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
 | `axf_benchmarks` | SPSC throughput and gain throughput sanity check |
@@ -66,7 +66,9 @@ thread modes.
 
 The Phase 3 plan is `Documentation/hardware/wasapi-test-plan.md`. The Phase 7
 interactive GUI checklist is `Documentation/hardware/gui-test-plan.md`. Both are
-unexecuted here. It is
+unexecuted here. The VST3 plan is
+`Documentation/hardware/vst3-test-plan.md`; its limited local plugin smoke test
+was executed, while the full matrix remains unexecuted. It is
 **untagged as executed**: HW-01…HW-09 are procedures to run on a physical
 Windows 10/11 machine, not results. Use `audiox --list-devices` to capture
 endpoint IDs and mix rates, then open a device in shared mode at that rate and
@@ -75,6 +77,15 @@ rate, buffer size, shared/exclusive mode, callback duration statistics and
 underruns. Mark a report **hardware-verified** only after the checklist has been
 executed; otherwise mark it **simulated only**. Cloud CI compiling the WASAPI
 source is not proof of device behaviour.
+
+## Local control/recording verification (2026-11-19)
+
+A fresh Release tree configured with `-DAXF_WERROR=ON` reported `100% tests
+passed out of 12` suites locally (13 total; hardware placeholder disabled)
+after adding automation, undo/autosave and recording tests. A separate
+VST3-enabled tree reported the same result, and the opt-in real-plugin smoke passed against SDK
+3.8.1 `AGain Sample Accurate` and `ADelay` binaries. These results predate the
+commit of those changes; CI has not yet run them.
 
 ## Rules
 

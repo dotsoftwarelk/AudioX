@@ -1,7 +1,9 @@
-# VST3 compatibility test plan (unexecuted)
+# VST3 compatibility test plan
 
-This is a procedure, not a result. No real plugin was loaded in the sandbox or
-in cloud CI. Cloud CI compiling the host proves only that the host builds.
+The full matrix below is still unexecuted. A limited real-plugin smoke test was
+executed locally on 2026-11-19, as recorded at the end of this document. Cloud
+CI compiling the host proves only that the host builds; CI skips the opt-in
+smoke test because no plug-in binary is installed there.
 
 ## Environment to record
 
@@ -30,4 +32,35 @@ in cloud CI. Cloud CI compiling the host proves only that the host builds.
 
 Mark a report **plugin-verified** only after the steps above are executed with
 at least three independently developed plugins and the observations recorded.
-Until then the host is **compile/CPU-verified only**.
+The local smoke test below is **limited plugin-verified**, not a completed
+compatibility matrix.
+
+## Executed local smoke test (2026-11-19)
+
+- AXF tree: local `f4ecca9` plus uncommitted control/recording/VST3 state work;
+  Release `AXF_WERROR=ON`, GCC, Linux.
+- SDK: Steinberg VST3 SDK 3.8.1 at `/tmp/axf-sdks/vst3sdk`; plug-ins built from
+  SDK examples in `/tmp/axf-vst3-plugins` with `SMTG_ENABLE_VSTGUI_SUPPORT=OFF`.
+- Command shape:
+
+  ```bash
+  AXF_VST3_PLUGIN_PATH=/path/to/again-sample-accurate.vst3 \
+  AXF_VST3_EXPECT_GAIN=1 \
+  /tmp/axf-vst3-local/Tests/axf_platform_tests \
+    --gtest_filter=PluginHost.Vst3RealPluginSmoke
+  ```
+
+  Set `AXF_VST3_PLUGIN_PATH` to a `.vst3` bundle or a directory of bundles.
+  `AXF_VST3_EXPECT_GAIN=1` additionally asserts unity-gain output at 48 kHz.
+- Result: `AGain Sample Accurate` scanned, loaded, prepared, processed a
+  stereo 128-frame block with the expected 0.25 output, returned `getState()`
+  bytes that `setState()` accepted, reset cleanly, and passed the finite-output
+  check. `ADelay` scanned, loaded, processed and round-tripped state without
+  error.
+- Defect found and fixed: the original single shared `MemoryStream` for
+  component + controller state made `AGain Sample Accurate` return
+  "VST3 controller state read failed". State is now framed into two independent
+  sections; the same smoke test passes after the fix.
+- Not covered by this run: three independent vendors, instruments, MIDI note
+  output, 44.1/96 kHz, 256/512-frame blocks, editor UI, 30-minute soak or
+  RT-audit sampling during `process()`.

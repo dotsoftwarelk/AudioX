@@ -2,8 +2,13 @@
 
 #include "axf/plugins/plugin_host.hpp"
 
+#include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstdlib>
 #include <filesystem>
+#include <iostream>
+#include <string>
 #include <vector>
 
 using namespace axf;
@@ -103,5 +108,88 @@ TEST(PluginHost, Vst3HostScansEmptyDirectory)
 TEST(PluginHost, Vst3HostUnavailableWithoutSdk)
 {
     EXPECT_EQ(plugins::createVst3Host(), nullptr);
+}
+#endif
+
+#if defined(AXF_HAS_VST3) && AXF_HAS_VST3
+// Opt-in smoke test against a real VST3 plug-in binary. Set
+// AXF_VST3_PLUGIN_PATH to a .vst3 file or a directory of plug-ins; when the
+// plug-in is a unity-gain effect, also set AXF_VST3_EXPECT_GAIN=1. This runs
+// scanning, loading, preparation, audio processing and state round-trip.
+TEST(PluginHost, Vst3RealPluginSmoke)
+{
+    const char* configured = std::getenv("AXF_VST3_PLUGIN_PATH");
+    if (configured == nullptr || *configured == '\0')
+    {
+        GTEST_SKIP() << "set AXF_VST3_PLUGIN_PATH to run the real plug-in smoke test";
+    }
+    const std::filesystem::path requested(configured);
+    const std::filesystem::path directory =
+        requested.has_extension() ? requested.parent_path() : requested;
+    const bool wantGain = std::getenv("AXF_VST3_EXPECT_GAIN") != nullptr;
+
+    auto host = plugins::createVst3Host();
+    ASSERT_NE(host, nullptr);
+    const auto descriptors = host->scan(directory.string());
+    ASSERT_TRUE(descriptors.ok());
+    ASSERT_FALSE(descriptors.value().empty());
+
+    auto selected = descriptors.value().end();
+    for (auto it = descriptors.value().begin(); it != descriptors.value().end(); ++it)
+    {
+        if (requested.has_extension() && it->path != requested.string())
+        {
+            continue;
+        }
+        if (wantGain && it->name.find("AGain") == std::string::npos)
+        {
+            continue;
+        }
+        selected = it;
+        break;
+    }
+    if (selected == descriptors.value().end())
+    {
+        for (const auto& descriptor : descriptors.value())
+        {
+            std::cerr << "scanned: " << descriptor.name << " | " << descriptor.path << '\n';
+        }
+    }
+    ASSERT_NE(selected, descriptors.value().end())
+        << "no matching VST3 class found at " << requested.string();
+
+    auto created = host->create(*selected);
+    ASSERT_TRUE(created.ok());
+    auto instance = std::move(created.value());
+    instance->prepare(48000.0, 128);
+
+    audio::AudioBuffer audio(2, 128);
+    audio.fill(0.25F);
+    auto view = audio::makeView(audio);
+    std::array<midi::MidiEvent, 8> events{};
+    midi::MidiEventBufferView midi{events.data(), 0, events.size()};
+    instance->process(view, midi);
+
+    if (wantGain)
+    {
+        EXPECT_NEAR(audio.channelData(0)[0], 0.25F, 1.0e-5F);
+        EXPECT_NEAR(audio.channelData(1)[127], 0.25F, 1.0e-5F);
+    }
+    for (core::ChannelCount channel = 0; channel < audio.channels(); ++channel)
+    {
+        for (std::size_t frame = 0; frame < audio.frames(); ++frame)
+        {
+            EXPECT_TRUE(std::isfinite(audio.channelData(channel)[frame]));
+        }
+    }
+
+    const auto state = instance->getState();
+    if (!state.ok())
+    {
+        std::cerr << "getState failed: " << state.error().message << '\n';
+    }
+    ASSERT_TRUE(state.ok());
+    EXPECT_TRUE(instance->setState(state.value()).ok());
+    instance->reset();
 }
 #endif

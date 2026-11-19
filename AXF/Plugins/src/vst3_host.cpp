@@ -36,9 +36,11 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cstring>
 #include <filesystem>
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -90,6 +92,54 @@ std::uint32_t toFrames(std::uint64_t frame, std::size_t frames) noexcept
         return frames == 0 ? 0U : static_cast<std::uint32_t>(frames - 1U);
     }
     return static_cast<std::uint32_t>(frame);
+}
+
+constexpr std::array<std::byte, 4> kStateMagic{std::byte{'A'}, std::byte{'X'}, std::byte{'S'},
+                                               std::byte{'1'}};
+
+void appendUint64(std::vector<std::byte>& bytes, std::uint64_t value) noexcept
+{
+    for (std::size_t byte = 0; byte < 8; ++byte)
+    {
+        bytes.push_back(static_cast<std::byte>((value >> (8U * byte)) & 0xFFU));
+    }
+}
+
+[[nodiscard]] bool readUint64(const std::vector<std::byte>& bytes, std::size_t& offset,
+                              std::uint64_t& value) noexcept
+{
+    if (bytes.size() - offset < 8)
+    {
+        return false;
+    }
+    value = 0;
+    for (std::size_t byte = 0; byte < 8; ++byte)
+    {
+        value |= static_cast<std::uint64_t>(std::to_integer<std::uint8_t>(bytes[offset + byte]))
+                 << (8U * byte);
+    }
+    offset += 8;
+    return true;
+}
+
+[[nodiscard]] std::vector<std::byte> streamBytes(Steinberg::MemoryStream& stream) noexcept
+{
+    const auto size = static_cast<std::size_t>(std::max<Steinberg::TSize>(0, stream.getSize()));
+    std::vector<std::byte> bytes(size);
+    if (size == 0)
+    {
+        return bytes;
+    }
+    stream.seek(0, Steinberg::IBStream::kIBSeekSet, nullptr);
+    Steinberg::int32 read = 0;
+    if (stream.read(bytes.data(), static_cast<Steinberg::int32>(size), &read) !=
+            Steinberg::kResultOk ||
+        read <= 0)
+    {
+        return {};
+    }
+    bytes.resize(static_cast<std::size_t>(read));
+    return bytes;
 }
 
 class Vst3Instance final : public IPluginInstance
@@ -258,18 +308,33 @@ class Vst3Instance final : public IPluginInstance
         {
             return AXF_ERROR(core::ErrorCode::PluginError, "VST3 component is unavailable");
         }
-        Steinberg::MemoryStream stream;
-        if (component_->getState(&stream) != Steinberg::kResultOk)
+        Steinberg::MemoryStream componentStream;
+        if (component_->getState(&componentStream) != Steinberg::kResultOk)
         {
             return AXF_ERROR(core::ErrorCode::PluginError, "VST3 component state read failed");
         }
-        if (controller_ && controller_->getState(&stream) != Steinberg::kResultOk)
+        componentStream.truncateToCursor();
+        const auto componentBytes = streamBytes(componentStream);
+
+        std::vector<std::byte> controllerBytes;
+        if (controller_)
         {
-            return AXF_ERROR(core::ErrorCode::PluginError, "VST3 controller state read failed");
+            Steinberg::MemoryStream controllerStream;
+            if (controller_->getState(&controllerStream) == Steinberg::kResultOk)
+            {
+                controllerStream.truncateToCursor();
+                controllerBytes = streamBytes(controllerStream);
+            }
         }
-        stream.truncateToCursor();
-        const auto* bytes = reinterpret_cast<const std::byte*>(stream.getData());
-        return std::vector<std::byte>(bytes, bytes + stream.getSize());
+
+        std::vector<std::byte> framed;
+        framed.reserve(kStateMagic.size() + 16U + componentBytes.size() + controllerBytes.size());
+        framed.insert(framed.end(), kStateMagic.begin(), kStateMagic.end());
+        appendUint64(framed, componentBytes.size());
+        framed.insert(framed.end(), componentBytes.begin(), componentBytes.end());
+        appendUint64(framed, controllerBytes.size());
+        framed.insert(framed.end(), controllerBytes.begin(), controllerBytes.end());
+        return framed;
     }
 
     [[nodiscard]] core::Result<void> setState(const std::vector<std::byte>& state) override
@@ -278,17 +343,50 @@ class Vst3Instance final : public IPluginInstance
         {
             return AXF_ERROR(core::ErrorCode::PluginError, "VST3 component is unavailable");
         }
-        void* memory = const_cast<void*>(static_cast<const void*>(state.data()));
-        Steinberg::MemoryStream componentStream(memory,
-                                                static_cast<Steinberg::int64>(state.size()));
-        if (component_->setState(&componentStream) != Steinberg::kResultOk)
+        if (state.size() < kStateMagic.size() ||
+            !std::equal(kStateMagic.begin(), kStateMagic.end(), state.begin()))
+        {
+            return AXF_ERROR(core::ErrorCode::InvalidArgument, "unrecognised VST3 state format");
+        }
+        std::size_t offset = kStateMagic.size();
+        std::uint64_t componentSize = 0;
+        std::uint64_t controllerSize = 0;
+        if (!readUint64(state, offset, componentSize) || componentSize > state.size() - offset)
+        {
+            return AXF_ERROR(core::ErrorCode::InvalidArgument, "invalid VST3 component state size");
+        }
+        const auto componentBegin = state.begin() + static_cast<std::ptrdiff_t>(offset);
+        const std::vector<std::byte> componentBytes(
+            componentBegin, componentBegin + static_cast<std::ptrdiff_t>(componentSize));
+        offset += static_cast<std::size_t>(componentSize);
+        if (!readUint64(state, offset, controllerSize) || controllerSize > state.size() - offset)
+        {
+            return AXF_ERROR(core::ErrorCode::InvalidArgument,
+                             "invalid VST3 controller state size");
+        }
+        const auto controllerBegin = state.begin() + static_cast<std::ptrdiff_t>(offset);
+        const std::vector<std::byte> controllerBytes(
+            controllerBegin, controllerBegin + static_cast<std::ptrdiff_t>(controllerSize));
+        offset += static_cast<std::size_t>(controllerSize);
+        if (offset != state.size())
+        {
+            return AXF_ERROR(core::ErrorCode::InvalidArgument, "trailing VST3 state bytes");
+        }
+
+        void* componentMemory = const_cast<void*>(static_cast<const void*>(componentBytes.data()));
+        Steinberg::MemoryStream componentStream(
+            componentMemory, static_cast<Steinberg::int64>(componentBytes.size()));
+        if (!componentBytes.empty() &&
+            component_->setState(&componentStream) != Steinberg::kResultOk)
         {
             return AXF_ERROR(core::ErrorCode::PluginError, "VST3 component state write failed");
         }
-        if (controller_)
+        if (!controllerBytes.empty() && controller_)
         {
-            Steinberg::MemoryStream controllerStream(memory,
-                                                     static_cast<Steinberg::int64>(state.size()));
+            void* controllerMemory =
+                const_cast<void*>(static_cast<const void*>(controllerBytes.data()));
+            Steinberg::MemoryStream controllerStream(
+                controllerMemory, static_cast<Steinberg::int64>(controllerBytes.size()));
             if (controller_->setState(&controllerStream) != Steinberg::kResultOk)
             {
                 return AXF_ERROR(core::ErrorCode::PluginError,

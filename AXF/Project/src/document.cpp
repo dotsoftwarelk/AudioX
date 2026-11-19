@@ -2,6 +2,8 @@
 
 #include "axf/project/project.hpp"
 
+#include "axf/project/automation.hpp"
+
 #include <algorithm>
 #include <charconv>
 #include <cmath>
@@ -114,6 +116,8 @@ bool validPan(float pan) noexcept
 {
     return std::isfinite(pan) && pan >= -1.0F && pan <= 1.0F;
 }
+
+constexpr std::size_t kMaxAutomationPoints = 4096;
 } // namespace
 
 ProjectDocument::ProjectDocument() = default;
@@ -248,6 +252,91 @@ core::Result<std::uint64_t> ProjectDocument::addClip(std::uint64_t trackId, std:
     return id;
 }
 
+core::Result<void> ProjectDocument::setAutomation(std::uint64_t trackId,
+                                                  AutomationParameter parameter,
+                                                  std::vector<AutomationPoint> points) noexcept
+{
+    if (findTrack(trackId) == nullptr)
+    {
+        return core::makeError(core::ErrorCode::NotFound, "track not found");
+    }
+    if (points.size() > kMaxAutomationPoints)
+    {
+        return core::makeError(core::ErrorCode::OutOfRange, "too many automation points");
+    }
+    for (std::size_t i = 0; i < points.size(); ++i)
+    {
+        if (i > 0 && points[i].frame <= points[i - 1].frame)
+        {
+            return core::makeError(core::ErrorCode::InvalidArgument,
+                                   "automation frames must strictly increase");
+        }
+        if (!validAutomationValue(parameter, points[i].value))
+        {
+            return core::makeError(core::ErrorCode::OutOfRange, "automation value out of range");
+        }
+    }
+    automation_.erase(std::remove_if(automation_.begin(), automation_.end(),
+                                     [trackId, parameter](const AutomationLane& lane) {
+                                         return lane.trackId == trackId &&
+                                                lane.parameter == parameter;
+                                     }),
+                      automation_.end());
+    if (!points.empty())
+    {
+        automation_.push_back(AutomationLane{trackId, parameter, std::move(points)});
+    }
+    return core::success();
+}
+
+core::Result<void> ProjectDocument::clearAutomation(std::uint64_t trackId,
+                                                    AutomationParameter parameter) noexcept
+{
+    const auto before = automation_.size();
+    automation_.erase(std::remove_if(automation_.begin(), automation_.end(),
+                                     [trackId, parameter](const AutomationLane& lane) {
+                                         return lane.trackId == trackId &&
+                                                lane.parameter == parameter;
+                                     }),
+                      automation_.end());
+    return automation_.size() == before
+               ? core::makeError(core::ErrorCode::NotFound, "automation lane not found")
+               : core::success();
+}
+
+const std::vector<AutomationLane>& ProjectDocument::automation() const noexcept
+{
+    return automation_;
+}
+
+core::Result<float> ProjectDocument::evaluateAutomation(std::uint64_t trackId,
+                                                        AutomationParameter parameter,
+                                                        std::uint64_t frame) const noexcept
+{
+    const Track* track = nullptr;
+    for (const Track& candidate : tracks_)
+    {
+        if (candidate.id == trackId)
+        {
+            track = &candidate;
+            break;
+        }
+    }
+    if (track == nullptr)
+    {
+        return core::makeError(core::ErrorCode::NotFound, "track not found");
+    }
+    const float base = parameter == AutomationParameter::Gain ? track->gain : track->pan;
+    for (const AutomationLane& lane : automation_)
+    {
+        if (lane.trackId == trackId && lane.parameter == parameter)
+        {
+            return interpolateAutomation(lane, frame);
+        }
+    }
+    return base;
+}
+
 core::Result<void> ProjectDocument::removeClip(std::uint64_t clipId) noexcept
 {
     for (Track& track : tracks_)
@@ -279,6 +368,15 @@ std::string ProjectDocument::serialize() const
         {
             output += "CLIP\t" + std::to_string(clip.id) + "\t" + std::to_string(clip.startFrame) +
                       "\t" + std::to_string(clip.lengthFrames) + "\t" + escape(clip.source) + "\n";
+        }
+    }
+    for (const AutomationLane& lane : automation_)
+    {
+        for (const AutomationPoint& point : lane.points)
+        {
+            output += "AUTOMATION\t" + std::to_string(lane.trackId) + "\t" +
+                      automationParameterName(lane.parameter) + "\t" + std::to_string(point.frame) +
+                      "\t" + std::to_string(point.value) + "\n";
         }
     }
     output += "END\n";
@@ -355,6 +453,45 @@ core::Result<ProjectDocument> ProjectDocument::parse(std::string_view text)
                                              {}});
             currentTrack = &document.tracks_.back();
             document.nextId_ = std::max(document.nextId_, id.value() + 1);
+        }
+        else if (fields[0] == "AUTOMATION" && fields.size() == 5)
+        {
+            const auto trackId = parseNumber<std::uint64_t>(fields[1]);
+            AutomationParameter parameter{};
+            const auto frame = parseNumber<std::uint64_t>(fields[3]);
+            const auto value = parseNumber<float>(fields[4]);
+            if (!trackId || !frame || !value || !parseAutomationParameter(fields[2], parameter) ||
+                !validAutomationValue(parameter, value.value()))
+            {
+                return core::makeError(core::ErrorCode::InvalidArgument,
+                                       "invalid automation record");
+            }
+            if (document.findTrack(trackId.value()) == nullptr)
+            {
+                return core::makeError(core::ErrorCode::InvalidArgument,
+                                       "automation for unknown track");
+            }
+            AutomationLane* lane = nullptr;
+            for (AutomationLane& candidate : document.automation_)
+            {
+                if (candidate.trackId == trackId.value() && candidate.parameter == parameter)
+                {
+                    lane = &candidate;
+                    break;
+                }
+            }
+            if (lane == nullptr)
+            {
+                document.automation_.push_back(AutomationLane{trackId.value(), parameter, {}});
+                lane = &document.automation_.back();
+            }
+            if (lane->points.size() >= kMaxAutomationPoints ||
+                (!lane->points.empty() && frame.value() <= lane->points.back().frame))
+            {
+                return core::makeError(core::ErrorCode::InvalidArgument,
+                                       "invalid automation point order");
+            }
+            lane->points.push_back(AutomationPoint{frame.value(), value.value()});
         }
         else if (fields[0] == "CLIP" && fields.size() == 5)
         {
