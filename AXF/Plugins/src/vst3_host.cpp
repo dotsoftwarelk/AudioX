@@ -83,7 +83,7 @@ bool hasVst3Extension(const fs::path& path) noexcept
     return extension == ".vst3";
 }
 
-std::uint32_t toFrames(std::uint64_t frame, std::uint32_t frames) noexcept
+std::uint32_t toFrames(std::uint64_t frame, std::size_t frames) noexcept
 {
     if (frame >= frames)
     {
