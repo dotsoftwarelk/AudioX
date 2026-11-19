@@ -3,7 +3,7 @@
 - Status: Accepted; simulated scene tests complete, interactive Windows verification pending
 - Date: 2026-11-19
 - Phase: 7
-- Evidence: portable scene/widget tests; MSVC compile via CI. No window was rendered in the sandbox.
+- Evidence: portable scene/widget tests; GCC `44542472580`, MSVC `44542472445`, Quality `44542472569` (all green). No window was rendered in the sandbox.
 
 ## Context
 

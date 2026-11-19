@@ -8,12 +8,13 @@ Run locally:
 Scripts/run_tests.sh
 ```
 
-CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: Phase 6 portable suites pass locally; Windows compilation and the full suite were verified in GitHub Actions on
-2026-11-19: Portable GCC `44539857623`, Windows MSVC `44539857549`, Quality
-`44539857581` — all successful, with 11/11 enabled tests passing in both
-Release and Debug. Earlier run IDs: Phase 4 `44536414501` / `44536414626` /
-`44536414437`; Phase 3 `44532804211` / `44532804371` / `44532804250`. No real
-audio device was present.
+CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: Phase 7 portable suites pass locally; Windows compilation and the full suite were verified in GitHub Actions on
+2026-11-19: Portable GCC `44542472580`, Windows MSVC `44542472445`, Quality
+`44542472569` — all successful, with 12/12 enabled tests passing in both
+Release and Debug. Earlier run IDs: Phase 6 `44539857623` / `44539857549` /
+`44539857581`; Phase 4 `44536414501` / `44536414626` / `44536414437`; Phase 3
+`44532804211` / `44532804371` / `44532804250`. No real audio device or display
+was present.
 
 | Suite | Covers |
 |---|---|
