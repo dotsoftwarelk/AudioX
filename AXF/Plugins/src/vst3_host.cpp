@@ -87,7 +87,7 @@ std::uint32_t toFrames(std::uint64_t frame, std::size_t frames) noexcept
 {
     if (frame >= frames)
     {
-        return frames == 0 ? 0U : frames - 1U;
+        return frames == 0 ? 0U : static_cast<std::uint32_t>(frames - 1U);
     }
     return static_cast<std::uint32_t>(frame);
 }
