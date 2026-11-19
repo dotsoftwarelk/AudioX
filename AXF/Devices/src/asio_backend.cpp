@@ -4,6 +4,11 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+// The ASIO SDK's iasiodrv.h predates modern MSVC headers and expects the old
+// MIDL `interface` macro. Define it before any SDK header is included.
+#ifndef interface
+#define interface struct
+#endif
 #include "axf/devices/device_manager.hpp"
 
 #include "axf/core/rt.hpp"
@@ -303,8 +308,8 @@ class AsioDevice final : public IAudioDevice
     std::atomic<DeviceState> state_{DeviceState::Unknown};
     std::atomic<bool> running_{false};
     std::atomic<bool> resetRequested_{false};
-    std::atomic<bool> latenciesChanged_{false};
-    std::atomic<double> latencySamples_{0.0};
+    mutable std::atomic<bool> latenciesChanged_{false};
+    mutable std::atomic<double> latencySamples_{0.0};
     std::atomic<double> sampleRateChanged_{0.0};
     std::atomic<std::uint64_t> frameCounter_{0};
     std::atomic<std::uint64_t> callbackCount_{0};
