@@ -1,8 +1,9 @@
 # ADR 0007 — Windows device layer (WASAPI shared mode)
 
-- Status: Accepted
+- Status: Accepted; simulated verification complete, hardware verification pending
 - Date: 2026-11-19
 - Phase: 3
+- Evidence: GCC `44532804211`, MSVC `44532804371`, Quality `44532804250` (all green)
 
 ## Context
 

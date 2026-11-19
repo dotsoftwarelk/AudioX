@@ -8,7 +8,10 @@ Run locally:
 Scripts/run_tests.sh
 ```
 
-CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: Phase 3 portable suites pass locally; Windows compilation and the full suite are verified in GitHub Actions.
+CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: Phase 3 portable suites pass locally; Windows compilation and the full suite were verified in GitHub Actions on
+2026-11-19: Portable GCC `44532804211`, Windows MSVC `44532804371`, Quality
+`44532804250` — all successful, with 10/10 enabled tests passing in both
+Release and Debug. No real audio device was present.
 
 | Suite | Covers |
 |---|---|
