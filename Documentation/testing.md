@@ -50,8 +50,8 @@ Debug/Release builds still execute the global-override test.
 
 The first local sanitizer pass found a real UBSan defect: `ScheduledEvent::payload`
 was read through a 4-byte-aligned `Payload*` while the byte array had only 1-byte
-alignment. `payload` is now `alignas(8)`, and the scheduler test passes under
-UBSan. No address, leak or data-race reports remain in the exercised paths.
+alignment. `payload` is now a naturally aligned `std::uint64_t[4]` (an explicit
+`alignas` would trigger MSVC C4324), and the scheduler test passes under UBSan. No address, leak or data-race reports remain in the exercised paths.
 
 CI run IDs will be recorded here after the first sanitizer workflow run.
 

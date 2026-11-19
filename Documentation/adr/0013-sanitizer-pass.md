@@ -24,8 +24,9 @@ needs repeatable sanitizer jobs, not a one-off local command.
    suite. The build directory is overridable with `AXF_SANITIZER_BUILD_DIR`.
 2. Add `.github/workflows/sanitizers.yml` with `address` and `thread` jobs.
 3. Fix the misaligned `ScheduledEvent::payload` access found by UBSan:
-   `payload` is now `alignas(8) std::byte[32]`, matching the alignment required
-   by event payload structs such as `Payload`.
+   `payload` is now a naturally 8-byte-aligned `std::uint64_t[4]`, matching the
+   alignment required by event payload structs such as `Payload`. An explicit
+   `alignas` would have triggered MSVC C4324 under `/W4 /WX`.
 4. Make the RT audit allocation test independent of global operator new.
    Sanitizer runtimes legitimately replace the global allocation functions,
    so the core assertion now calls `rt::noteAllocation()` and
