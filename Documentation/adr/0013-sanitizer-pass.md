@@ -7,6 +7,8 @@
   `Scripts/run_sanitizers.sh thread` (TSan) both reported `100% tests passed
   out of 12`; the hardware placeholder remains disabled. CI workflow
   `.github/workflows/sanitizers.yml` runs both modes on every push and PR.
+  Final CI runs: GCC `44613628281`, MSVC `44613628173`, Quality `44613628147`,
+  Sanitizers `44613628203` (all success; 12/12 enabled tests in each mode).
 
 ## Context
 

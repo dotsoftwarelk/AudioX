@@ -17,9 +17,9 @@
 - **Static libraries only.** Shared-library export macros and ABI stability are future work.
 - **Benchmark numbers** were produced in a virtualised Linux sandbox and are not performance claims for Windows audio hardware.
 - **Sanitizers are CPU-only and Linux/GCC based.** ASan+UBSan with leak
-  detection and TSan run on every push/PR and report 12/12 enabled CPU tests
-  passing, but there is no Windows sanitizer run, long-duration soak test or
-  device underrun measurement under load.
+  detection and TSan run on every push/PR (`44613628203`) and report 12/12
+  enabled CPU tests passing, but there is no Windows sanitizer run,
+  long-duration soak test or device underrun measurement under load.
 - **The RT allocation override test is skipped under sanitizer runtimes.**
   ASan/TSan replace global `operator new`; the portable assertion calls the
   instrumentation API directly, while the global-override test runs only in
