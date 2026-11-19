@@ -8,7 +8,7 @@ Run locally:
 Scripts/run_tests.sh
 ```
 
-CI runs the same suite with MSVC Debug + Release and portable GCC Debug + Release, with warnings as errors.
+CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: all 7 CPU test suites passed on both toolchains.
 
 | Suite | Covers |
 |---|---|

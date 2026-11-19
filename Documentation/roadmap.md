@@ -2,7 +2,7 @@
 
 | Phase | Scope | Exit evidence |
 |---|---|---|
-| 0 | Repo, CMake, core skeleton, CI, docs, tests | **Current**: builds and 7 CPU test suites pass on portable GCC; MSVC CI configured but not run locally |
+| 0 | Repo, CMake, core skeleton, CI, docs, tests | **Current**: 7 CPU test suites pass on portable GCC Debug/Release and MSVC 19.51/19.52 Debug/Release (Actions run `44523518416`); quality gates pass |
 | 1 | Full AXF.Core implementation (job system, events, config) | Unit tests, documented API |
 | 2 | Audio foundation: buffers, clock, graph compiler, RT engine skeleton | Integration tests, allocation audit |
 | 3 | WASAPI backend, then ASIO | Hardware test report on physical Windows machine |
