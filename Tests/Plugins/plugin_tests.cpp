@@ -15,6 +15,18 @@ using namespace axf;
 
 namespace
 {
+const char* environmentValue(const char* name) noexcept
+{
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
+    return std::getenv(name);
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+}
+
 class PassThroughPlugin final : public plugins::IPluginInstance
 {
   public:
@@ -118,7 +130,7 @@ TEST(PluginHost, Vst3HostUnavailableWithoutSdk)
 // scanning, loading, preparation, audio processing and state round-trip.
 TEST(PluginHost, Vst3RealPluginSmoke)
 {
-    const char* configured = std::getenv("AXF_VST3_PLUGIN_PATH");
+    const char* configured = environmentValue("AXF_VST3_PLUGIN_PATH");
     if (configured == nullptr || *configured == '\0')
     {
         GTEST_SKIP() << "set AXF_VST3_PLUGIN_PATH to run the real plug-in smoke test";
@@ -126,7 +138,7 @@ TEST(PluginHost, Vst3RealPluginSmoke)
     const std::filesystem::path requested(configured);
     const std::filesystem::path directory =
         requested.has_extension() ? requested.parent_path() : requested;
-    const bool wantGain = std::getenv("AXF_VST3_EXPECT_GAIN") != nullptr;
+    const bool wantGain = environmentValue("AXF_VST3_EXPECT_GAIN") != nullptr;
 
     auto host = plugins::createVst3Host();
     ASSERT_NE(host, nullptr);
