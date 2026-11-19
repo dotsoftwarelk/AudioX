@@ -19,7 +19,7 @@ was present.
 | Suite | Covers |
 |---|---|
 | `axf_core_tests` | conversions, Result/Error, SPSC FIFO, events, job system, config snapshots/file IO, time/tempo, aligned/pool memory, thread utilities, multi-sink logger and RT logging guard |
-| `axf_rt_audit_tests` | global allocation interception on a marked audio thread, including 16 engine callbacks and 32 Phase 4 DSP callbacks with zero allocations |
+| `axf_rt_audit_tests` | global allocation interception on a marked audio thread, including 16 engine callbacks, 32 Phase 4 DSP callbacks, 20k concurrent callbacks with 40 graph republishes, and 300 malformed project inputs |
 | `axf_engine_tests` | compiled graph processing, gain accuracy, channel mismatch rejection, graph republishing, 2000-block stability, buffer pool, sample-accurate scheduler, latency propagation |
 | `axf_audio_tests` | clock, transport state and position |
 | `axf_dsp_tests` | gain accuracy, channel integrity, denormal/NaN handling, biquad coefficient validation, Goertzel frequency response for LP/HP/peaking EQ, reset tail, constant-power panning |
