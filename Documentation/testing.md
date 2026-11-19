@@ -8,7 +8,7 @@ Run locally:
 Scripts/run_tests.sh
 ```
 
-CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: all 7 CPU test suites passed on both toolchains.
+CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: Phase 3 portable suites pass locally; Windows compilation and the full suite are verified in GitHub Actions.
 
 | Suite | Covers |
 |---|---|
@@ -20,11 +20,20 @@ CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, g
 | `axf_midi_tests` | event encoding and bounded event buffer |
 | `axf_graph_tests` | validation, duplicate ports, cycle rejection, ordering, MIDI ports |
 | `axf_platform_tests` | version, media extensions, project format, plugin contract |
+| `axf_devices_tests` | device config and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
 | `axf_benchmarks` | SPSC throughput and gain throughput sanity check |
 
 ## Hardware tests (not in cloud CI)
 
-Create tagged tests when real device support lands. Run on a physical Windows 10/11 machine with WASAPI and, if available, an ASIO driver. Record device name, driver version, sample rate, buffer size, shared/exclusive mode, underruns and measured callback duration. Mark results clearly as hardware-verified.
+The Phase 3 plan is `Documentation/hardware/wasapi-test-plan.md`. It is
+**untagged as executed**: HW-01…HW-09 are procedures to run on a physical
+Windows 10/11 machine, not results. Use `audiox --list-devices` to capture
+endpoint IDs and mix rates, then open a device in shared mode at that rate and
+drive the compiled engine. Record device name, driver version, OS build, sample
+rate, buffer size, shared/exclusive mode, callback duration statistics and
+underruns. Mark a report **hardware-verified** only after the checklist has been
+executed; otherwise mark it **simulated only**. Cloud CI compiling the WASAPI
+source is not proof of device behaviour.
 
 ## Rules
 

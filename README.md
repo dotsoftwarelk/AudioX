@@ -3,12 +3,15 @@
 **AudioX Framework (AXF)** is an independent, modular C++20 audio SDK.
 **AudioX DAW** is a separate application built on AXF's public API.
 
-> Status: **Phase 2 — audio foundation complete**.
-> AXF now has a compiled, immutable audio graph, a real-time engine skeleton,
-> preallocated buffer pools, sample-accurate event scheduling, latency
-> propagation and an allocation-free callback verified by the RT audit.
-> This is still **not a DAW**: no device backend, recording, editing, mixer UI,
-> VST3 hosting or GUI exists yet. See `Documentation/known-limitations.md`.
+> Status: **Phase 3 — Windows device layer, awaiting hardware verification**.
+> AXF has a compiled, immutable audio graph, an allocation-free real-time
+> engine, preallocated buffer pools, sample-accurate scheduling and latency
+> propagation. Phase 3 adds a portable device abstraction, a real WASAPI
+> shared-mode backend (plus event-driven exclusive mode), device enumeration,
+> disconnect detection, device→engine callback wiring and a hardware test plan.
+> Cloud CI verifies compilation and simulated tests only; no physical audio
+> device has been tested. This is still **not a DAW**: no recording, editing,
+> mixer UI, VST3 hosting or GUI exists yet. See `Documentation/known-limitations.md`.
 
 ## Design goals
 
@@ -38,6 +41,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DAXF_WERROR=ON
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ./build/AudioX/audiox --self-test
+./build/AudioX/audiox --list-devices
 ```
 
 Windows:
@@ -61,7 +65,8 @@ cmake --build /tmp/app
 - `Documentation/architecture/overview.md`
 - `Documentation/adr/` — architecture decision records
 - `Documentation/design/audio-engine.md`, `Documentation/design/graph.md`
-- `Documentation/testing.md`, `Documentation/performance/README.md`
+- `Documentation/testing.md`, `Documentation/hardware/wasapi-test-plan.md`,
+  `Documentation/performance/README.md`
 - `Documentation/roadmap.md`, `Documentation/known-limitations.md`
 - `Documentation/coding-standards.md`, `THIRD_PARTY.md`
 

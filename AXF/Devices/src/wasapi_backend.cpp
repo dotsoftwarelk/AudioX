@@ -9,6 +9,7 @@
 
 #include <audioclient.h>
 #include <functiondiscoverykeys_devpkey.h>
+#include <initguid.h>
 #include <mmdeviceapi.h>
 #include <windows.h>
 #include <wrl/client.h>

@@ -4,6 +4,7 @@
 #include "axf/core/error.hpp"
 #include "axf/core/types.hpp"
 #include "axf/devices/device.hpp"
+#include "axf/devices/device_manager.hpp"
 #include "axf/dsp/utility.hpp"
 #include "axf/graph/graph.hpp"
 #include "axf/media/audio_file.hpp"
@@ -14,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace
 {
@@ -26,6 +28,36 @@ int printInfo()
               << "  Project format: " << axf::project::projectFormatVersion() << '\n'
               << "  Default backend:"
               << axf::devices::backendName(axf::devices::Backend::WasapiShared) << '\n';
+    return 0;
+}
+
+int listDevices()
+{
+    using namespace axf;
+
+    devices::DeviceManager manager;
+    if (auto backend = devices::createWasapiBackend())
+    {
+        manager.addBackend(std::move(backend));
+    }
+    const auto devices = manager.enumerate();
+    if (!devices)
+    {
+        std::cerr << "device enumeration failed: " << core::formatError(devices.error()) << '\n';
+        return 1;
+    }
+    for (const devices::DeviceInfo& device : devices.value())
+    {
+        std::cout << device.id << " | " << device.name << " | "
+                  << devices::backendName(device.backend)
+                  << " | in=" << static_cast<unsigned>(device.maxInputChannels)
+                  << " out=" << static_cast<unsigned>(device.maxOutputChannels);
+        if (!device.supportedSampleRates.empty())
+        {
+            std::cout << " mix=" << device.supportedSampleRates.front() << " Hz";
+        }
+        std::cout << '\n';
+    }
     return 0;
 }
 
@@ -90,6 +122,7 @@ int main(int argc, char** argv)
         Info,
         SelfTest,
         Help,
+        ListDevices,
     };
 
     Action action = Action::Info;
@@ -103,6 +136,10 @@ int main(int argc, char** argv)
         else if (argument == "--info")
         {
             action = Action::Info;
+        }
+        else if (argument == "--list-devices")
+        {
+            action = Action::ListDevices;
         }
         else if (argument == "--help" || argument == "-h")
         {
@@ -121,8 +158,10 @@ int main(int argc, char** argv)
         return selfTest();
     case Action::Info:
         return printInfo();
+    case Action::ListDevices:
+        return listDevices();
     case Action::Help:
-        std::cout << "usage: audiox [--info] [--self-test] [--help]\n";
+        std::cout << "usage: audiox [--info] [--self-test] [--list-devices] [--help]\n";
         return 0;
     }
     return 0;
