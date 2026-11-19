@@ -5,7 +5,7 @@ axf_add_module(Audio ${CMAKE_CURRENT_SOURCE_DIR}/Audio ${CMAKE_CURRENT_SOURCE_DI
 axf_add_module(Devices ${CMAKE_CURRENT_SOURCE_DIR}/Devices ${CMAKE_CURRENT_SOURCE_DIR}/Devices/src/device.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Devices/src/device_manager.cpp)
 axf_add_module(DSP ${CMAKE_CURRENT_SOURCE_DIR}/DSP       ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/dsp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/gain_processor.cpp ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/biquad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/panner.cpp)
 axf_add_module(Graph ${CMAKE_CURRENT_SOURCE_DIR}/Graph     ${CMAKE_CURRENT_SOURCE_DIR}/Graph/src/graph.cpp)
-axf_add_module(Plugins ${CMAKE_CURRENT_SOURCE_DIR}/Plugins   ${CMAKE_CURRENT_SOURCE_DIR}/Plugins/src/plugin_host.cpp)
+axf_add_module(Plugins ${CMAKE_CURRENT_SOURCE_DIR}/Plugins   ${CMAKE_CURRENT_SOURCE_DIR}/Plugins/src/plugin_host.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Plugins/src/vst3_host.cpp)
 axf_add_module(MIDI ${CMAKE_CURRENT_SOURCE_DIR}/MIDI      ${CMAKE_CURRENT_SOURCE_DIR}/MIDI/src/event.cpp ${CMAKE_CURRENT_SOURCE_DIR}/MIDI/src/smf.cpp)
 axf_add_module(Media ${CMAKE_CURRENT_SOURCE_DIR}/Media     ${CMAKE_CURRENT_SOURCE_DIR}/Media/src/audio_file.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Media/src/wav_file.cpp)
 axf_add_module(Project ${CMAKE_CURRENT_SOURCE_DIR}/Project   ${CMAKE_CURRENT_SOURCE_DIR}/Project/src/project.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Project/src/document.cpp)
@@ -67,14 +67,13 @@ if(AXF_ENABLE_VST3)
   target_include_directories(axf_vst3_platform PUBLIC ${AXF_VST3_SDK_ROOT})
   target_compile_features(axf_vst3_platform PUBLIC cxx_std_20)
   if(MSVC)
-    target_compile_options(axf_vst3_platform PRIVATE /W0)
+    # The SDK's Win32 module source still uses u8 literals as char pointers.
+    target_compile_options(axf_vst3_platform PRIVATE /W0 /Zc:char8_t-)
   else()
     target_compile_options(axf_vst3_platform PRIVATE -w)
   endif()
   target_link_libraries(axf_vst3_platform PUBLIC sdk_hosting)
 
-  target_sources(axf_plugins PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Plugins/src/vst3_host.cpp)
   target_link_libraries(axf_plugins PRIVATE
     $<BUILD_INTERFACE:axf_vst3_platform>
     $<BUILD_INTERFACE:sdk_hosting>)
