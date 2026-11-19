@@ -80,6 +80,7 @@ class Direct2DCanvas final : public ICanvas
             return;
         }
         ComPtr<IDWriteTextFormat> format;
+        ComPtr<IDWriteTextLayout> layout;
         const std::wstring wide = utf8ToWide(std::string(text));
         const float size = std::clamp(fontSize, 6.0F, 96.0F);
         if (FAILED(writeFactory_->CreateTextFormat(
@@ -88,9 +89,14 @@ class Direct2DCanvas final : public ICanvas
         {
             return;
         }
+        if (FAILED(writeFactory_->CreateTextLayout(wide.c_str(), static_cast<UINT32>(wide.size()),
+                                                   format.Get(), bounds.width, bounds.height,
+                                                   layout.GetAddressOf())))
+        {
+            return;
+        }
         brush_->SetColor(toD2d(color));
-        target_->DrawTextW(wide.c_str(), static_cast<UINT32>(wide.size()), format.Get(),
-                           toD2d(bounds), brush_);
+        target_->DrawTextLayout(D2D1::Point2F(bounds.x, bounds.y), layout.Get(), brush_);
     }
 
     void present() noexcept override
