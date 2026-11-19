@@ -68,7 +68,7 @@ if(WIN32 AND AXF_ENABLE_ASIO)
   else()
     target_compile_options(axf_asio_sdk PRIVATE -w)
   endif()
-  target_link_libraries(axf_devices PRIVATE axf_asio_sdk ole32 advapi32)
+  target_link_libraries(axf_devices PRIVATE $<BUILD_INTERFACE:axf_asio_sdk> ole32 advapi32)
   target_sources(axf_devices PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Devices/src/asio_backend.cpp)
 endif()
