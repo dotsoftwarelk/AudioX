@@ -8,7 +8,7 @@
 > engine, preallocated buffer pools, sample-accurate scheduling and latency
 > propagation. Phase 3 adds a portable device abstraction, a real WASAPI
 > shared-mode backend (plus event-driven exclusive mode), device enumeration,
-> disconnect detection, device→engine callback wiring and a hardware test plan.
+> disconnect detection, a public device→engine callback adapter and a hardware test plan.
 > Cloud CI verifies compilation and simulated tests only; no physical audio
 > device has been tested. This is still **not a DAW**: no recording, editing,
 > mixer UI, VST3 hosting or GUI exists yet. See `Documentation/known-limitations.md`.

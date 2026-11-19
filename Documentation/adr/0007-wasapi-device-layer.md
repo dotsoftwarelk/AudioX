@@ -30,14 +30,18 @@ portable public API and must keep GCC and MSVC Debug/Release builds green.
    endpoint format is detected (32-bit IEEE float or 16-bit PCM) and converted
    in preallocated storage. Shared mode uses the device mix format and rejects
    a sample-rate mismatch rather than silently resampling.
-5. A device is one direction only. Full duplex requires two devices because the
+5. `axf/devices/engine_callback.hpp` provides `EngineDeviceCallback`, a public
+   adapter that forwards device planar buffers straight into
+   `AudioEngine::process()`. The device→engine path is therefore part of the
+   SDK, not only a test fixture.
+6. A device is one direction only. Full duplex requires two devices because the
    first implementation uses one `IAudioClient` per device. Disconnects are
    detected from WASAPI error HRESULTs; the pump exits and reports
    `DeviceState::Disconnected`.
-6. Change notifications use `IMMNotificationClient` and are forwarded through
+7. Change notifications use `IMMNotificationClient` and are forwarded through
    `DeviceManager` to application listeners. Listener callbacks are `noexcept`
    and must not block.
-7. `audiox --list-devices` exposes enumeration to operators for hardware test
+8. `audiox --list-devices` exposes enumeration to operators for hardware test
    reports. Hardware tests remain opt-in and are never claimed as CI evidence.
 
 ## Consequences
