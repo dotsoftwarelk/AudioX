@@ -37,8 +37,7 @@ compatibility matrix.
 
 ## Executed local smoke test (2026-11-19)
 
-- AXF tree: local `f4ecca9` plus uncommitted control/recording/VST3 state work;
-  Release `AXF_WERROR=ON`, GCC, Linux.
+- AXF commit: `bf2f668`; Release `AXF_WERROR=ON`, GCC, Linux.
 - SDK: Steinberg VST3 SDK 3.8.1 at `/tmp/axf-sdks/vst3sdk`; plug-ins built from
   SDK examples in `/tmp/axf-vst3-plugins` with `SMTG_ENABLE_VSTGUI_SUPPORT=OFF`.
 - Command shape:

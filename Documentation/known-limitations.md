@@ -39,8 +39,8 @@
 - **Device change notifications are not synchronised with engine reconfiguration.** Listeners receive a hint and must re-enumerate on the control thread.
 - **File I/O is limited** to 16-bit PCM RIFF/WAVE and SMF format 0. No 24-bit/float WAV, AIFF, FLAC, multi-track SMF export, SysEx or tempo-map export. SMF frames must align with the PPQ/tempo grid for exact round-trips.
 - **Recording is bounded and unconnected to a live device in CI.** The
-  preallocated recorder and device callback adapter are locally tested with a
-  fake callback and an RT-allocation check, but no real input device was
+  preallocated recorder and device callback adapter are CI-tested with a fake
+  callback and an RT-allocation check, but no real input device was
   recorded. Over-capacity frames are counted as dropped, not wrapped.
 - **Automation, undo and autosave are control-thread only.** Linear
   gain/pan lanes, whole-document snapshot undo and atomic autosave revisions

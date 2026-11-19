@@ -1,11 +1,12 @@
 # ADR 0016 — Project control features
 
-- Status: Accepted; locally tested, CI verification pending
+- Status: Accepted; locally tested and CI-verified
 - Date: 2026-11-19
 - Phase: 8 extension
 - Evidence: local Release `AXF_WERROR=ON` build and `ctest` reporting
-  `100% tests passed out of 12` suites (hardware placeholder disabled), with
-  the new GoogleTest cases all passing.
+  `100% tests passed out of 12` suites (hardware placeholder disabled); CI
+  `bf2f668` Windows MSVC `44625636487`, Portable GCC `44625636835`,
+  Sanitizers `44625636593`, Quality `44625636510` — all successful.
 
 ## Context
 
@@ -43,5 +44,3 @@ audio path.
   revision caps make the worst case explicit.
 - Automation is linear only. Curve shapes and parameter modulation beyond
   gain/pan are future work.
-- CI results are not yet available for these changes; the local Werror build
-  and tests are the current evidence.

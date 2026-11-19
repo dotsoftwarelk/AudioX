@@ -8,9 +8,12 @@
   `https://github.com/steinbergmedia/vst3sdk` with the `base`,
   `pluginterfaces`, `public.sdk` and `cmake` submodules. The SDK is never
   vendored or installed with AXF.
-- Evidence: Windows MSVC Debug + Release `44619637185`, portable GCC
-  `44619637224`, quality `44619637199`, sanitizers `44619637383` — all green;
-  MSVC reported `100% tests passed out of 12`.
+- Evidence: initial host runs Windows MSVC Debug + Release `44619637185`,
+  portable GCC `44619637224`, quality `44619637199`, sanitizers `44619637383`
+  — all green. The later state-framing fix and opt-in smoke test were
+  CI-verified at `bf2f668`: MSVC `44625636487`, portable GCC `44625636835`,
+  sanitizers `44625636593`, quality `44625636510`; MSVC reported
+  `100% tests passed out of 12`.
 
 ## Context
 

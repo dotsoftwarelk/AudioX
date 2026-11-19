@@ -12,7 +12,11 @@ CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, g
 2026-11-19: Portable GCC `44619637224`, Windows MSVC `44619637185`, Quality
 `44619637199`, Sanitizers `44619637383` — all successful, with 12/12 enabled
 tests passing in both Release and Debug and in both sanitizer modes. These runs
-include the ASIO and VST3 SDK builds. Earlier Phase 10 IDs: GCC `44613628281`,
+include the ASIO and VST3 SDK builds. The control/recording/state-framing
+work was verified on commit `bf2f668`: Portable GCC `44625636835`, Windows MSVC
+`44625636487`, Quality `44625636510`, Sanitizers `44625636593` — all
+successful, with `100% tests passed out of 12` in each test job. Earlier Phase
+10 IDs: GCC `44613628281`,
 MSVC `44613628173`, Quality `44613628147`, Sanitizers `44613628203`; Phase 9
 IDs: GCC `44549680971`, MSVC `44549681036`, Quality `44549680864`. Earlier run IDs: Phase 8 `44544378901` / `44544379083` /
 `44544378963`; Phase 7 `44542472580` / `44542472445` / `44542472569`; Phase 6
@@ -84,8 +88,8 @@ A fresh Release tree configured with `-DAXF_WERROR=ON` reported `100% tests
 passed out of 12` suites locally (13 total; hardware placeholder disabled)
 after adding automation, undo/autosave and recording tests. A separate
 VST3-enabled tree reported the same result, and the opt-in real-plugin smoke passed against SDK
-3.8.1 `AGain Sample Accurate` and `ADelay` binaries. These results predate the
-commit of those changes; CI has not yet run them.
+3.8.1 `AGain Sample Accurate` and `ADelay` binaries. All four CI jobs later
+passed on commit `bf2f668` (IDs above).
 
 ## Rules
 

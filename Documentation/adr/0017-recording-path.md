@@ -1,11 +1,13 @@
 # ADR 0017 — Preallocated recording path
 
-- Status: Accepted; locally tested, CI verification pending
+- Status: Accepted; locally tested and CI-verified
 - Date: 2026-11-19
 - Phase: 6 extension
 - Evidence: local Release `AXF_WERROR=ON` build and `ctest` reporting
-  `100% tests passed out of 12` suites; the new recorder cases pass and the RT
-  audit confirms no allocation in `capture()`.
+  `100% tests passed out of 12` suites; CI `bf2f668` Windows MSVC
+  `44625636487`, Portable GCC `44625636835`, Sanitizers `44625636593`,
+  Quality `44625636510` — all successful. The RT audit confirms no allocation
+  in `capture()`.
 
 ## Context
 
@@ -38,5 +40,3 @@ corrupting audio.
   through `core::Result` instead of throwing into the audio path.
 - 16-bit PCM matches the current WAV writer; 24-bit/float output remains future
   work.
-- CI results are not yet available for these changes; the local Werror build
-  and tests are the current evidence.
