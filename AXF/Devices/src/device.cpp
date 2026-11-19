@@ -5,6 +5,24 @@
 namespace axf::devices
 {
 
+const char* deviceStateName(DeviceState state) noexcept
+{
+    switch (state)
+    {
+    case DeviceState::Unknown:
+        return "unknown";
+    case DeviceState::Active:
+        return "active";
+    case DeviceState::Disabled:
+        return "disabled";
+    case DeviceState::Disconnected:
+        return "disconnected";
+    case DeviceState::NotPresent:
+        return "not present";
+    }
+    return "unknown";
+}
+
 const char* backendName(Backend backend) noexcept
 {
     switch (backend)
@@ -47,6 +65,31 @@ core::Result<void> validateConfig(const DeviceConfig& config) noexcept
     if (config.backend == Backend::None)
     {
         return core::makeError(core::ErrorCode::InvalidArgument, "no audio backend selected");
+    }
+    return core::success();
+}
+
+core::Result<void> validateWasapiConfig(const DeviceConfig& config) noexcept
+{
+    const auto validation = validateConfig(config);
+    if (!validation)
+    {
+        return validation.error();
+    }
+    if (config.backend != Backend::WasapiShared && config.backend != Backend::WasapiExclusive)
+    {
+        return core::makeError(core::ErrorCode::InvalidArgument,
+                               "WASAPI requires a WASAPI backend selection");
+    }
+    if (config.inputChannels > 0 && config.outputChannels > 0)
+    {
+        return core::makeError(core::ErrorCode::Unsupported,
+                               "full duplex requires separate capture and render devices");
+    }
+    if (config.backend == Backend::WasapiExclusive && config.outputChannels > 2)
+    {
+        return core::makeError(core::ErrorCode::Unsupported,
+                               "exclusive mode supports at most two channels in Phase 3");
     }
     return core::success();
 }

@@ -22,6 +22,26 @@ enum class Backend : std::uint8_t
 
 [[nodiscard]] AXF_API const char* backendName(Backend backend) noexcept;
 
+enum class DeviceState : std::uint8_t
+{
+    Unknown,
+    Active,
+    Disabled,
+    Disconnected,
+    NotPresent,
+};
+
+[[nodiscard]] AXF_API const char* deviceStateName(DeviceState state) noexcept;
+
+struct DeviceDiagnostics final
+{
+    std::uint64_t callbackCount{0};
+    std::uint64_t underrunCount{0};
+    std::uint64_t overrunCount{0};
+    std::uint32_t lastCallbackFrames{0};
+    double lastCallbackMicroseconds{0.0};
+};
+
 struct DeviceInfo final
 {
     std::string id;
@@ -44,6 +64,10 @@ struct DeviceConfig final
 /// Validates without touching hardware. Control-thread only.
 [[nodiscard]] AXF_API core::Result<void> validateConfig(const DeviceConfig& config) noexcept;
 
+/// Validates WASAPI-specific restrictions without touching hardware: one
+/// direction per device, at most two channels in exclusive mode.
+[[nodiscard]] AXF_API core::Result<void> validateWasapiConfig(const DeviceConfig& config) noexcept;
+
 /// Called on the audio device thread. All real-time rules apply to the
 /// implementation of this callback: no allocation, locks, I/O or UI.
 class IAudioDeviceCallback
@@ -65,10 +89,22 @@ class IAudioDevice
     virtual void stop() noexcept = 0;
     [[nodiscard]] virtual bool isRunning() const noexcept = 0;
     [[nodiscard]] virtual double reportedLatencySeconds() const noexcept = 0;
+    [[nodiscard]] virtual DeviceState state() const noexcept = 0;
+    [[nodiscard]] virtual DeviceDiagnostics diagnostics() const noexcept = 0;
 };
 
-/// Backend implementations (WASAPI in Phase 3, ASIO afterwards) satisfy this
-/// interface. No backend is compiled in Phase 0.
+/// Receives device-arrival/removal notifications. Implementations must be
+/// noexcept and must not perform blocking work; notifications may arrive on a
+/// platform callback thread.
+class IDeviceChangeListener
+{
+  public:
+    virtual ~IDeviceChangeListener() = default;
+    virtual void onDevicesChanged() noexcept = 0;
+};
+
+/// Backend implementations satisfy this interface. WASAPI is implemented for
+/// Windows; ASIO is reserved for a later milestone.
 class IDeviceBackend
 {
   public:
@@ -77,6 +113,12 @@ class IDeviceBackend
     [[nodiscard]] virtual core::Result<std::vector<DeviceInfo>> enumerate() = 0;
     [[nodiscard]] virtual core::Result<std::unique_ptr<IAudioDevice>> open(
         const std::string& deviceId, const DeviceConfig& config) = 0;
+
+    /// Optional platform change notification hook. Default is a no-op.
+    virtual void setChangeListener(IDeviceChangeListener* listener) noexcept
+    {
+        (void)listener;
+    }
 };
 
 } // namespace axf::devices
