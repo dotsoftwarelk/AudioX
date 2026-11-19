@@ -30,6 +30,8 @@ extern IASIO* theAsioDriver;
 
 namespace axf::devices::detail
 {
+class AsioDevice;
+
 namespace
 {
 constexpr long kMaxAsioDrivers = 64;
