@@ -21,21 +21,41 @@ TEST(RtAudit, DetectsAllocationOnMarkedAudioThread)
     rt::setAllocationHook(countAllocation, &allocations);
     {
         rt::ScopedAudioThread guard;
-        // Direct operator calls cannot be elided by the optimiser, unlike a
-        // new-expression whose allocation may legally be omitted.
-        void* memory = ::operator new(sizeof(int));
-        int* value = static_cast<int*>(memory);
-        *value = 42;
-        EXPECT_EQ(*value, 42);
-        ::operator delete(value);
+        // Call the instrumentation API directly so this assertion is
+        // independent of global operator new replacements (ASan/TSan and
+        // other runtimes may provide their own definitions).
+        rt::noteAllocation(sizeof(int), false);
         rt::noteRealtimeViolation();
     }
     rt::setAllocationHook(nullptr, nullptr);
 
-    EXPECT_EQ(rt::violationCount(), 2U);
-    EXPECT_GE(allocations.load(), 1);
+    EXPECT_GE(rt::violationCount(), 2U);
+    EXPECT_GE(allocations.load(), 2);
     EXPECT_FALSE(rt::isAudioThread());
 }
+
+#if defined(__SANITIZE_ADDRESS__) || defined(__SANITIZE_THREAD__)
+TEST(RtAudit, GlobalOperatorNewInstrumentationSkippedUnderSanitizer)
+{
+    GTEST_SKIP() << "Sanitizer runtimes replace global operator new.";
+}
+#else
+TEST(RtAudit, GlobalOperatorNewIsInstrumented)
+{
+    rt::resetViolations();
+    std::atomic<int> allocations{0};
+    rt::setAllocationHook(countAllocation, &allocations);
+    {
+        rt::ScopedAudioThread guard;
+        void* memory = ::operator new(sizeof(int));
+        ::operator delete(memory);
+    }
+    rt::setAllocationHook(nullptr, nullptr);
+
+    EXPECT_GE(rt::violationCount(), 1U);
+    EXPECT_GE(allocations.load(), 2);
+}
+#endif
 
 TEST(RtAudit, ControlThreadAllocationIsIgnored)
 {

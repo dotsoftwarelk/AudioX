@@ -18,6 +18,8 @@ REQUIRED_FILES = [
     "THIRD_PARTY.md",
     "CMakeLists.txt",
     ".github/workflows/windows-msvc.yml",
+    ".github/workflows/sanitizers.yml",
+    "Scripts/run_sanitizers.sh",
 ]
 FORBIDDEN_PATHS = ["third_party/vst3", "third_party/asio"]
 SECRET_PATTERNS = [re.compile(r"ghp_[A-Za-z0-9]{20,}"), re.compile(r"github_pat_[A-Za-z0-9_]{20,}")]

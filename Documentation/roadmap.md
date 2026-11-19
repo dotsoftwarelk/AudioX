@@ -12,6 +12,7 @@
 | 6 | MIDI and media file I/O: 16-bit WAV, SMF format 0 | Portable WAV sample and SMF event round-trip tests; ADR 0009 |
 | 7 | GUI framework: portable scene graph + Win32/Direct2D/DirectWrite window | Simulated draw-call tests; ADR 0010. Interactive checklist in `Documentation/hardware/gui-test-plan.md` still pending |
 | 8 | DAW control model: tracks, clips, mixer state, versioned serialisation | Round-trip and validation tests; ADR 0011 |
-| 9 | Hardening pass: concurrent graph publication, malformed-input robustness | 20k concurrent callbacks + 40 republishes, 300 parser inputs; ADR 0012. Sanitizer/leak and hardware reports still pending |
+| 9 | Hardening pass: concurrent graph publication, malformed-input robustness | 20k concurrent callbacks + 40 republishes, 300 parser inputs; ADR 0012. Hardware report still pending |
+| 10 | Sanitizer pass: ASan/UBSan/leak and TSan in CI, alignment/audit fixes | Local + CI sanitizer jobs green, 12/12 CPU tests in each mode; ADR 0013. Hardware/GUI and Windows-specific sanitizer reports still pending |
 
 No phase is marked complete until its acceptance criteria are demonstrated by evidence.

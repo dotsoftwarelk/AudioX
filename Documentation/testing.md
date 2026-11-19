@@ -32,6 +32,29 @@ Release and Debug. Earlier run IDs: Phase 8 `44544378901` / `44544379083` /
 | `axf_devices_tests` | device config and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
 | `axf_benchmarks` | SPSC throughput and gain throughput sanity check |
 
+## Sanitizer jobs
+
+Run both locally before pushing:
+
+```bash
+Scripts/run_sanitizers.sh address   # ASan + UBSan + leak detection
+Scripts/run_sanitizers.sh thread    # TSan
+```
+
+The jobs build fresh Ninja trees with `AXF_WERROR=ON` and run the same 12
+enabled CPU tests. The hardware placeholder stays disabled. Sanitizer runtimes
+replace global `operator new`; therefore the RT audit test that asserts
+violation counting calls `rt::noteAllocation()` directly, and the separate
+global-override test is skipped with an explicit reason under ASan/TSan. Normal
+Debug/Release builds still execute the global-override test.
+
+The first local sanitizer pass found a real UBSan defect: `ScheduledEvent::payload`
+was read through a 4-byte-aligned `Payload*` while the byte array had only 1-byte
+alignment. `payload` is now `alignas(8)`, and the scheduler test passes under
+UBSan. No address, leak or data-race reports remain in the exercised paths.
+
+CI run IDs will be recorded here after the first sanitizer workflow run.
+
 ## Hardware tests (not in cloud CI)
 
 The Phase 3 plan is `Documentation/hardware/wasapi-test-plan.md`. The Phase 7

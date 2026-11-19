@@ -16,7 +16,7 @@ struct ScheduledEvent final
     std::uint32_t sequence;
     core::events::EventTypeId type;
     std::uint16_t payloadSize;
-    std::byte payload[32];
+    alignas(8) std::byte payload[32];
 };
 
 /// Fixed-capacity, allocation-free sample-accurate event queue. Insertion and

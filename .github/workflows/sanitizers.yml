@@ -1,0 +1,19 @@
+name: Sanitizers
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  sanitizers:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [address, thread]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ${{ matrix.mode }} sanitizer build and tests
+        run: ./Scripts/run_sanitizers.sh ${{ matrix.mode }}

@@ -45,7 +45,7 @@ Rules:
 
 Graph and plugin topology changes follow: control thread builds a new immutable snapshot → publishes an atomic pointer at a buffer boundary → audio thread uses the old snapshot until done → control thread retires the old snapshot. This avoids locks and use-after-free in the callback.
 
-## Status (Phase 9 hardening pass)
+## Status (Phase 10 sanitizer pass)
 
 Implemented: Core types/errors/results/SPSC queue, typed events, job system, published configuration snapshots, time/tempo conversions, aligned buffer and pool allocator, real-time audit hooks, multi-sink logger, Audio buffers/clock/transport, compiled graph and allocation-free engine, preallocated buffer pools, sample-accurate scheduler, latency propagation, Graph description and validation, DSP gain, biquad EQ/filter and panner processors, MIDI event primitives and SMF file I/O, 16-bit PCM WAV file I/O, plugin/media/project/GUI interfaces, portable device manager, WASAPI shared/exclusive backends (Windows only), public `EngineDeviceCallback` adapter, disconnect state, enumeration via `audiox --list-devices`, installable CMake package, CI.
 
