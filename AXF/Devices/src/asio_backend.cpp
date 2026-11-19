@@ -4,11 +4,8 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-// The ASIO SDK's iasiodrv.h predates modern MSVC headers and expects the old
-// MIDL `interface` macro. Define it before any SDK header is included.
-#ifndef interface
-#define interface struct
-#endif
+// <unknwn.h> supplies the MIDL `interface` macro expected by the ASIO SDK's
+// iasiodrv.h. Include it before any SDK header, without redefining the macro.
 #include "axf/devices/device_manager.hpp"
 
 #include "axf/core/rt.hpp"
