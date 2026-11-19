@@ -20,7 +20,7 @@ axf_add_test(axf_audio_tests Unit/audio_tests.cpp Audio/buffer_tests.cpp)
 axf_add_test(axf_dsp_tests DSP/dsp_tests.cpp DSP/biquad_tests.cpp DSP/panner_tests.cpp)
 axf_add_test(axf_midi_tests Unit/midi_tests.cpp)
 axf_add_test(axf_graph_tests Integration/graph_tests.cpp Integration/device_config_tests.cpp)
-axf_add_test(axf_platform_tests Platform/platform_tests.cpp Plugins/plugin_tests.cpp)
+axf_add_test(axf_platform_tests Platform/platform_tests.cpp Plugins/plugin_tests.cpp Integration/project_document_tests.cpp)
 
 # Dedicated build of global operator new/delete instrumentation. It is linked
 # only into the audit test and is never installed with the AXF SDK.

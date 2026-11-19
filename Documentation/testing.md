@@ -25,7 +25,7 @@ was present.
 | `axf_dsp_tests` | gain accuracy, channel integrity, denormal/NaN handling, biquad coefficient validation, Goertzel frequency response for LP/HP/peaking EQ, reset tail, constant-power panning |
 | `axf_midi_tests` | event encoding and bounded event buffer |
 | `axf_graph_tests` | validation, duplicate ports, cycle rejection, ordering, MIDI ports |
-| `axf_platform_tests` | version, media extensions, project format, plugin contract |
+| `axf_platform_tests` | version, media extensions, project format, plugin contract, track/clip model, serialisation round-trip and corrupt-input rejection |
 | `axf_file_io_tests` | WAV 16-bit PCM stereo round-trip and invalid input; SMF format 0 event round-trip with VLQ deltas and invalid input |
 | `axf_gui_tests` | widget draw geometry, text, meter scaling, dirty invalidation, clip culling, vertical layout, non-Windows window stub |
 | `axf_devices_tests` | device config and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |

@@ -1,4 +1,4 @@
-# Known limitations (Phase 7)
+# Known limitations (Phase 8)
 
 - **No local Windows verification.** The development sandbox is Linux/GCC. MSVC was not available locally, but GitHub Actions `windows-latest` executed MSVC 19.51/19.52 Debug and Release builds with `/W4 /WX`; all Phase 0 CPU test suites passed (run `44523518416`), Phase 1 in run `44526375198`, and Phase 2 in run `44528029411`. This still does not prove WASAPI or ASIO hardware behaviour.
 - **WASAPI is implemented but not hardware-verified.** The Windows backend compiles in CI and the portable device→engine path is simulated; no physical endpoint has been exercised. See `Documentation/hardware/wasapi-test-plan.md`.

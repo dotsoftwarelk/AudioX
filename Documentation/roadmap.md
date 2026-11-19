@@ -11,7 +11,7 @@
 | 5 | VST3 host | Compatibility matrix on real plugins |
 | 6 | MIDI and media file I/O: 16-bit WAV, SMF format 0 | Portable WAV sample and SMF event round-trip tests; ADR 0009 |
 | 7 | GUI framework: portable scene graph + Win32/Direct2D/DirectWrite window | Simulated draw-call tests; ADR 0010. Interactive checklist in `Documentation/hardware/gui-test-plan.md` still pending |
-| 8 | AudioX DAW subsystems | Feature-level integration tests |
+| 8 | DAW control model: tracks, clips, mixer state, versioned serialisation | Round-trip and validation tests; ADR 0011 |
 | 9 | Professional hardening | Long-duration, leak, thread-safety, hardware and performance reports |
 
 No phase is marked complete until its acceptance criteria are demonstrated by evidence.
