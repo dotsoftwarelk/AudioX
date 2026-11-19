@@ -1,4 +1,4 @@
-# Known limitations (Phase 6)
+# Known limitations (Phase 7)
 
 - **No local Windows verification.** The development sandbox is Linux/GCC. MSVC was not available locally, but GitHub Actions `windows-latest` executed MSVC 19.51/19.52 Debug and Release builds with `/W4 /WX`; all Phase 0 CPU test suites passed (run `44523518416`), Phase 1 in run `44526375198`, and Phase 2 in run `44528029411`. This still does not prove WASAPI or ASIO hardware behaviour.
 - **WASAPI is implemented but not hardware-verified.** The Windows backend compiles in CI and the portable device→engine path is simulated; no physical endpoint has been exercised. See `Documentation/hardware/wasapi-test-plan.md`.
@@ -13,6 +13,6 @@
 - **No VST3 host.** Only interfaces and a test double exist. No plugin is scanned or loaded.
 - **Device change notifications are not synchronised with engine reconfiguration.** Listeners receive a hint and must re-enumerate on the control thread.
 - **File I/O is limited** to 16-bit PCM RIFF/WAVE and SMF format 0. No 24-bit/float WAV, AIFF, FLAC, multi-track SMF export, SysEx or tempo-map export. SMF frames must align with the PPQ/tempo grid for exact round-trips.
-- **No GUI rendering or DAW editing features.** The application is a diagnostic shell accepting `--info`, `--self-test`, `--help`.
+- **GUI is not interactively verified.** A Win32/Direct2D/DirectWrite window and a portable scene graph exist, but no window was rendered in the sandbox. There is no input routing, high-DPI scaling, accessibility or animated layout. The application remains a diagnostic shell accepting `--info`, `--self-test`, `--list-devices`, `--help`.
 - **Static libraries only.** Shared-library export macros and ABI stability are future work.
 - **Benchmark numbers** were produced in a virtualised Linux sandbox and are not performance claims for Windows audio hardware.

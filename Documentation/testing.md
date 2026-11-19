@@ -26,12 +26,15 @@ audio device was present.
 | `axf_graph_tests` | validation, duplicate ports, cycle rejection, ordering, MIDI ports |
 | `axf_platform_tests` | version, media extensions, project format, plugin contract |
 | `axf_file_io_tests` | WAV 16-bit PCM stereo round-trip and invalid input; SMF format 0 event round-trip with VLQ deltas and invalid input |
+| `axf_gui_tests` | widget draw geometry, text, meter scaling, dirty invalidation, clip culling, vertical layout, non-Windows window stub |
 | `axf_devices_tests` | device config and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
 | `axf_benchmarks` | SPSC throughput and gain throughput sanity check |
 
 ## Hardware tests (not in cloud CI)
 
-The Phase 3 plan is `Documentation/hardware/wasapi-test-plan.md`. It is
+The Phase 3 plan is `Documentation/hardware/wasapi-test-plan.md`. The Phase 7
+interactive GUI checklist is `Documentation/hardware/gui-test-plan.md`. Both are
+unexecuted here. It is
 **untagged as executed**: HW-01…HW-09 are procedures to run on a physical
 Windows 10/11 machine, not results. Use `audiox --list-devices` to capture
 endpoint IDs and mix rates, then open a device in shared mode at that rate and
