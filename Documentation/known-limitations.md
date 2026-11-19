@@ -1,8 +1,16 @@
-# Known limitations (Phase 10)
+# Known limitations (Phase 3b)
 
 - **No local Windows verification.** The development sandbox is Linux/GCC. MSVC was not available locally, but GitHub Actions `windows-latest` executed MSVC 19.51/19.52 Debug and Release builds with `/W4 /WX`; all Phase 0 CPU test suites passed (run `44523518416`), Phase 1 in run `44526375198`, and Phase 2 in run `44528029411`. This still does not prove WASAPI or ASIO hardware behaviour.
 - **WASAPI is implemented but not hardware-verified.** The Windows backend compiles in CI and the portable device→engine path is simulated; no physical endpoint has been exercised. See `Documentation/hardware/wasapi-test-plan.md`.
-- **No ASIO backend.** The `Backend::Asio` enum value exists, but opening it is unsupported.
+- **ASIO is compiled but not hardware-verified.** Windows CI downloads the
+  official Steinberg ASIO SDK 2.3.4 and builds the backend in Debug/Release,
+  but no physical ASIO driver or interface was exercised. See
+  `Documentation/hardware/asio-test-plan.md`. ASIO-enabled binaries use the
+  SDK's GPLv3 option unless a proprietary Steinberg agreement is obtained.
+- **ASIO accepts only 32-bit float channels.** Integer, DSD and compressed
+  ASIO formats are rejected rather than silently converted.
+- **Only one ASIO device may be open at a time** because the SDK keeps global
+  driver state. Full duplex is supported within that one device.
 - **Shared mode uses the device mix format.** A requested sample rate that differs from the mix rate returns `Unsupported`; resampling is future work.
 - **One direction per WASAPI device.** Full duplex needs two separate devices and separate engine graphs.
 - **Exclusive mode is limited** to two channels and has not been measured for jitter or glitches on hardware.

@@ -7,3 +7,5 @@ Licensed under the Apache License, Version 2.0 (see LICENSE).
 Third-party components are listed in THIRD_PARTY.md. Steinberg VST3 and ASIO
 SDKs are NOT distributed with this repository and remain subject to their own
 licences. Obtain them directly from Steinberg and comply with their terms.
+ASIO-enabled binaries use the ASIO SDK under its GPLv3 option unless a separate
+proprietary Steinberg agreement is obtained.

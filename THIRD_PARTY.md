@@ -6,7 +6,7 @@
 | CMake | 3.25+ (build tool) | BSD-3-Clause | Build system | Not shipped. |
 | Ninja | optional | Apache-2.0 | Build backend | Not shipped. |
 | VST3 SDK | user-supplied | Steinberg proprietary | Phase 5 plugin hosting | **Never vendored.** User downloads from Steinberg; builds require `AXF_ENABLE_VST3=ON` plus a path provided locally. Do not commit SDK sources, headers or binaries. |
-| ASIO SDK | user-supplied | Steinberg proprietary | Phase 3 low-latency backend | **Never vendored.** Same rules as above. ASIO is a trademark of Steinberg. |
+| ASIO SDK | 2.3.4, downloaded by Windows CI from the official Steinberg zip | Dual: Steinberg proprietary **or** GPLv3 | Phase 3b low-latency backend | **Never vendored.** CI fetches into the runner temp dir and sets `AXF_ASIO_SDK_ROOT`. AXF uses the GPLv3 option; ASIO-enabled binaries must comply with GPLv3 unless a signed Steinberg proprietary agreement is obtained. ASIO is a trademark of Steinberg. |
 | fmt | not integrated | MIT | Candidate formatting library | Deferred; `std::ostream` used in Phase 0. Re-evaluate before adding. |
 | spdlog | not integrated | MIT | Candidate logger | Deferred; AXF owns its `ILogSink` abstraction. |
 | KissFFT | not integrated | BSD-3-Clause | Candidate FFT (Phase 4) | Deferred. |
