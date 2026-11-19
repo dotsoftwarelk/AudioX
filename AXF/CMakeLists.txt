@@ -14,7 +14,7 @@ axf_add_module(GUI ${CMAKE_CURRENT_SOURCE_DIR}/GUI       ${CMAKE_CURRENT_SOURCE_
 target_link_libraries(axf_core PUBLIC Threads::Threads)
 target_link_libraries(axf_platform PUBLIC axf_core)
 target_link_libraries(axf_audio PUBLIC axf_core axf_graph)
-target_link_libraries(axf_devices PUBLIC axf_core)
+target_link_libraries(axf_devices PUBLIC axf_core axf_audio)
 target_link_libraries(axf_dsp PUBLIC axf_core axf_audio)
 target_link_libraries(axf_graph PUBLIC axf_core)
 target_link_libraries(axf_plugins PUBLIC axf_core axf_audio axf_midi)

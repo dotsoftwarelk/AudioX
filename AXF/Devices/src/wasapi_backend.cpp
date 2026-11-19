@@ -4,15 +4,11 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#ifndef INITGUID
-#define INITGUID
-#endif
-
 #include "axf/devices/device_manager.hpp"
 
 #include <audioclient.h>
-#include <functiondiscoverykeys_devpkey.h>
 #include <mmdeviceapi.h>
+#include <propsys.h>
 #include <windows.h>
 #include <wrl/client.h>
 
@@ -35,6 +31,14 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
 constexpr REFERENCE_TIME kHundredNanosPerSecond = 10000000;
+
+// PKEY_Device_FriendlyName: a45c254e-df1c-4efd-8020-67d146a850e0 / pid 14.
+// Pinned locally to avoid the SDK's functiondiscoverykeys_devpkey.h, whose
+// DEFINE_PROPERTYKEY macro depends on include order under MSVC.
+constexpr PROPERTYKEY kDeviceFriendlyName = {
+    {0xa45c254e, 0xdf1c, 0x4efd, {0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0}},
+    14,
+};
 
 // 00000001-0000-0010-8000-00AA00389B71
 constexpr GUID kIeeeFloatSubtype = {
@@ -205,7 +209,7 @@ DeviceInfo describeDevice(const ComPtr<IMMDevice>& endpoint, EDataFlow flow, Bac
     {
         PROPVARIANT value;
         ::PropVariantInit(&value);
-        if (SUCCEEDED(properties->GetValue(PKEY_Device_FriendlyName, &value)) &&
+        if (SUCCEEDED(properties->GetValue(kDeviceFriendlyName, &value)) &&
             value.pwszVal != nullptr)
         {
             info.name = wideToUtf8(value.pwszVal);

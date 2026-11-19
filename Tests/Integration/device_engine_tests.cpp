@@ -2,6 +2,7 @@
 
 #include "axf/audio/engine.hpp"
 #include "axf/devices/device.hpp"
+#include "axf/devices/engine_callback.hpp"
 #include "axf/dsp/gain_processor.hpp"
 
 #include <array>
@@ -12,23 +13,6 @@ using namespace axf;
 
 namespace
 {
-class EngineCallback final : public devices::IAudioDeviceCallback
-{
-  public:
-    explicit EngineCallback(audio::AudioEngine& engine) : engine_(engine)
-    {
-    }
-
-    void onAudioCallback(float* const* inputs, float* const* outputs, std::uint32_t frames,
-                         std::uint64_t frame) noexcept override
-    {
-        engine_.process(inputs, outputs, frames, frame);
-    }
-
-  private:
-    audio::AudioEngine& engine_;
-};
-
 class ManualDevice final : public devices::IAudioDevice
 {
   public:
@@ -129,7 +113,7 @@ TEST(DeviceEngineIntegration, DeviceCallbackDrivesCompiledGraph)
     deviceConfig.backend = devices::Backend::WasapiShared;
     ASSERT_TRUE(devices::validateConfig(deviceConfig).ok());
 
-    EngineCallback callback(engine);
+    devices::EngineDeviceCallback callback(engine);
     ManualDevice device(deviceConfig, &callback);
     ASSERT_TRUE(device.start(&callback).ok());
 

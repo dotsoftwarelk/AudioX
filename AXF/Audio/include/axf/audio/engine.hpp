@@ -32,8 +32,8 @@ class AudioEngine final
     /// retained until engine destruction for safe reclamation.
     [[nodiscard]] core::Result<void> commit();
 
-    /// Audio-thread callback substitute for Phase 2. Device backends call this
-    /// with preallocated device buffers in Phase 3.
+    /// Audio-thread entry point. Device callback adapters call this with
+    /// preallocated device buffers.
     void process(float* const* inputs, float* const* outputs, std::uint32_t frameCount,
                  std::uint64_t streamFrame) noexcept;
 
