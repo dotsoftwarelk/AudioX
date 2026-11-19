@@ -14,8 +14,15 @@ jobs:
         config: [Debug, Release]
     steps:
       - uses: actions/checkout@v4
+      - name: Download Steinberg VST3 SDK
+        run: |
+          sdk="$RUNNER_TEMP/vst3sdk"
+          git clone --depth 1 https://github.com/steinbergmedia/vst3sdk.git "$sdk"
+          git -C "$sdk" submodule update --init --depth 1 base pluginterfaces public.sdk cmake
+          test -f "$sdk/public.sdk/source/vst/hosting/module.h"
+          echo "AXF_VST3_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
       - name: Configure
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DAXF_WERROR=ON
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DAXF_WERROR=ON -DAXF_ENABLE_VST3=ON
       - name: Build
         run: cmake --build build --parallel
       - name: Test

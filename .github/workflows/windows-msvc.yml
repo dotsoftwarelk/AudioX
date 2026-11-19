@@ -30,10 +30,18 @@ jobs:
           if (-not (Test-Path "$dir\ASIOSDK\common\asio.h")) { throw "ASIO SDK download failed" }
           "AXF_ASIO_SDK_ROOT=$dir\ASIOSDK" >> $env:GITHUB_ENV
 
+      - name: Download Steinberg VST3 SDK
+        run: |
+          $sdk = "$env:RUNNER_TEMP\vst3sdk"
+          git clone --depth 1 https://github.com/steinbergmedia/vst3sdk.git $sdk
+          git -C $sdk submodule update --init --depth 1 base pluginterfaces public.sdk cmake
+          if (-not (Test-Path "$sdk\public.sdk\source\vst\hosting\module.h")) { throw "VST3 SDK download failed" }
+          "AXF_VST3_SDK_ROOT=$sdk" >> $env:GITHUB_ENV
+
       - name: Configure
         # Ninja avoids pinning a Visual Studio generator version; the runner
         # image may ship VS 2022 or newer while MSVC remains the compiler.
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DAXF_BUILD_TESTS=ON -DAXF_BUILD_APP=ON -DAXF_WERROR=ON -DAXF_ENABLE_ASIO=ON
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DAXF_BUILD_TESTS=ON -DAXF_BUILD_APP=ON -DAXF_WERROR=ON -DAXF_ENABLE_ASIO=ON -DAXF_ENABLE_VST3=ON
 
       - name: Build
         run: cmake --build build --parallel

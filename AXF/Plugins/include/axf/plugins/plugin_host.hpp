@@ -44,7 +44,8 @@ class IPluginInstance
 };
 
 /// Scanning and loading live here, never in the audio callback.
-/// Phase 5 supplies the VST3 implementation.
+/// VST3 scanning/loading is supplied by the SDK-backed host; the factory
+/// returns nullptr when AXF was built without VST3 support.
 class IPluginHost
 {
   public:
@@ -54,5 +55,8 @@ class IPluginHost
     [[nodiscard]] virtual core::Result<std::unique_ptr<IPluginInstance>> create(
         const PluginDescriptor& descriptor) = 0;
 };
+
+/// Returns a real VST3 host when AXF_ENABLE_VST3=ON, otherwise nullptr.
+[[nodiscard]] AXF_API std::unique_ptr<IPluginHost> createVst3Host();
 
 } // namespace axf::plugins

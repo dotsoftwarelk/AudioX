@@ -3,6 +3,7 @@
 #include "axf/plugins/plugin_host.hpp"
 
 #include <array>
+#include <filesystem>
 #include <vector>
 
 using namespace axf;
@@ -81,3 +82,26 @@ TEST(PluginHost, InterfaceSupportsProcessingAndState)
     plugin.reset();
     EXPECT_EQ(plugin.latencySamples(), 0U);
 }
+
+#if defined(AXF_HAS_VST3) && AXF_HAS_VST3
+TEST(PluginHost, Vst3HostScansEmptyDirectory)
+{
+    auto host = plugins::createVst3Host();
+    ASSERT_NE(host, nullptr);
+    const auto directory = std::filesystem::temp_directory_path() / "axf-vst3-empty-scan";
+    std::filesystem::create_directories(directory);
+    const auto descriptors = host->scan(directory.string());
+    ASSERT_TRUE(descriptors.ok());
+    EXPECT_TRUE(descriptors.value().empty());
+
+    plugins::PluginDescriptor missing;
+    missing.id = "not-a-uid";
+    missing.path = (directory / "missing.vst3").string();
+    EXPECT_FALSE(host->create(missing).ok());
+}
+#else
+TEST(PluginHost, Vst3HostUnavailableWithoutSdk)
+{
+    EXPECT_EQ(plugins::createVst3Host(), nullptr);
+}
+#endif

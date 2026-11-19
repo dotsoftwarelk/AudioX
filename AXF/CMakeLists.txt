@@ -49,6 +49,37 @@ if(WIN32)
   target_link_libraries(axf_devices PRIVATE ole32 uuid)
 endif()
 
+if(AXF_ENABLE_VST3)
+  # The SDK hosting target deliberately omits its platform module and memory
+  # stream implementation; provide them as a build-only library so AXF never
+  # installs or vendors SDK sources.
+  if(WIN32)
+    set(AXF_VST3_MODULE_SOURCE ${AXF_VST3_SDK_ROOT}/public.sdk/source/vst/hosting/module_win32.cpp)
+  elseif(UNIX AND NOT APPLE)
+    set(AXF_VST3_MODULE_SOURCE ${AXF_VST3_SDK_ROOT}/public.sdk/source/vst/hosting/module_linux.cpp)
+  else()
+    message(FATAL_ERROR "AXF_ENABLE_VST3 is currently supported only on Windows and Linux")
+  endif()
+  add_library(axf_vst3_platform STATIC
+    ${AXF_VST3_MODULE_SOURCE}
+    ${AXF_VST3_SDK_ROOT}/public.sdk/source/common/memorystream.cpp
+    ${AXF_VST3_SDK_ROOT}/public.sdk/source/vst/hosting/plugprovider.cpp)
+  target_include_directories(axf_vst3_platform PUBLIC ${AXF_VST3_SDK_ROOT})
+  target_compile_features(axf_vst3_platform PUBLIC cxx_std_20)
+  if(MSVC)
+    target_compile_options(axf_vst3_platform PRIVATE /W0)
+  else()
+    target_compile_options(axf_vst3_platform PRIVATE -w)
+  endif()
+  target_link_libraries(axf_vst3_platform PUBLIC sdk_hosting)
+
+  target_sources(axf_plugins PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Plugins/src/vst3_host.cpp)
+  target_link_libraries(axf_plugins PRIVATE
+    $<BUILD_INTERFACE:axf_vst3_platform>
+    $<BUILD_INTERFACE:sdk_hosting>)
+endif()
+
 if(WIN32 AND AXF_ENABLE_ASIO)
   # The SDK is consumed from AXF_ASIO_SDK_ROOT and is never copied into the
   # repository or installed with AXF. ASIO-enabled binaries inherit the SDK's
