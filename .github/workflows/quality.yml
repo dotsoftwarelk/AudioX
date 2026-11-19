@@ -1,0 +1,21 @@
+name: Quality gates
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  dependencies-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check dependency and licensing policy
+        run: python3 Scripts/check_dependencies.py
+      - name: Install clang-format
+        run: python3 -m pip install clang-format==18.1.8
+      - name: Formatting check
+        run: |
+          files=$(git ls-files '*.hpp' '*.cpp')
+          clang-format --dry-run --Werror $files

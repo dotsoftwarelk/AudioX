@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.25)
+project(axf_minimal_app LANGUAGES CXX)
+find_package(AXF REQUIRED CONFIG)
+add_executable(axf_minimal_app main.cpp)
+target_compile_features(axf_minimal_app PRIVATE cxx_std_20)
+target_link_libraries(axf_minimal_app PRIVATE AXF::Core AXF::Audio AXF::DSP AXF::Graph)

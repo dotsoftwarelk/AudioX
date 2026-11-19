@@ -1,0 +1,9 @@
+AudioX Framework (AXF) and AudioX DAW
+Copyright 2026 AudioX contributors
+
+This product includes software developed by the AudioX contributors.
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party components are listed in THIRD_PARTY.md. Steinberg VST3 and ASIO
+SDKs are NOT distributed with this repository and remain subject to their own
+licences. Obtain them directly from Steinberg and comply with their terms.
