@@ -23,7 +23,7 @@ TEST(WavFile, SixteenBitPcmRoundTrip)
     std::vector<float> input(kFrames * 2);
     for (std::size_t index = 0; index < input.size(); ++index)
     {
-        input[index] = std::sin(static_cast<double>(index) * 0.01) * 0.8F;
+        input[index] = static_cast<float>(std::sin(static_cast<double>(index) * 0.01) * 0.8);
     }
 
     media::AudioFileInfo info;
