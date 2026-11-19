@@ -523,7 +523,8 @@ class AsioBackend final : public IDeviceBackend
             theAsioDriver = nullptr;
             return AXF_ERROR(core::ErrorCode::DeviceError, "ASIO buffer creation failed");
         }
-        return device;
+        std::unique_ptr<IAudioDevice> opened = std::move(device);
+        return opened;
     }
 };
 
