@@ -3,7 +3,7 @@
 - Status: Accepted
 - Date: 2026-11-19
 - Phase: 6
-- Evidence: portable round-trip tests for WAV and SMF; CI IDs appended after verification.
+- Evidence: portable round-trip tests for WAV and SMF; GCC `44539857623`, MSVC `44539857549`, Quality `44539857581` (all green).
 
 ## Context
 
