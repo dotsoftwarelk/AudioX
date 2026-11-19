@@ -40,6 +40,13 @@ constexpr PROPERTYKEY kDeviceFriendlyName = {
     14,
 };
 
+// These two GUIDs are not present in every Windows SDK's uuid.lib. Pin them
+// locally so the backend links without requiring consumers to add that lib.
+constexpr GUID kClsiMMDeviceEnumerator = {
+    0xbcde0395, 0xe52f, 0x467c, {0x8e, 0x3d, 0xc4, 0x57, 0x92, 0x91, 0x69, 0x2e}};
+constexpr GUID kIidMMNotificationClient = {
+    0x7991eec9, 0x7e89, 0x4d85, {0x83, 0x90, 0x6c, 0x70, 0x36, 0xc3, 0xce, 0x4d}};
+
 // 00000001-0000-0010-8000-00AA00389B71
 constexpr GUID kIeeeFloatSubtype = {
     0x00000001, 0x0000, 0x0010, {0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71}};
@@ -247,7 +254,7 @@ class WasapiNotificationClient final : public IMMNotificationClient
 
     STDMETHODIMP QueryInterface(REFIID identifier, void** result) override
     {
-        if (identifier == IID_IUnknown || identifier == IID_IMMNotificationClient)
+        if (identifier == IID_IUnknown || identifier == kIidMMNotificationClient)
         {
             *result = static_cast<IMMNotificationClient*>(this);
             AddRef();
@@ -736,7 +743,7 @@ class WasapiBackend final : public IDeviceBackend
         if (enumerator_ == nullptr)
         {
             if (FAILED(::CoCreateInstance(
-                    CLSID_MMDeviceEnumerator, nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+                    kClsiMMDeviceEnumerator, nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
                     reinterpret_cast<void**>(enumerator_.ReleaseAndGetAddressOf()))))
             {
                 return;
@@ -764,7 +771,7 @@ class WasapiBackend final : public IDeviceBackend
         }
         ComPtr<IMMDeviceEnumerator> enumerator;
         if (FAILED(::CoCreateInstance(
-                CLSID_MMDeviceEnumerator, nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+                kClsiMMDeviceEnumerator, nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
                 reinterpret_cast<void**>(enumerator.ReleaseAndGetAddressOf()))))
         {
             return core::makeError(core::ErrorCode::DeviceError,
@@ -814,7 +821,7 @@ class WasapiBackend final : public IDeviceBackend
         }
         ComPtr<IMMDeviceEnumerator> enumerator;
         if (FAILED(::CoCreateInstance(
-                CLSID_MMDeviceEnumerator, nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+                kClsiMMDeviceEnumerator, nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
                 reinterpret_cast<void**>(enumerator.ReleaseAndGetAddressOf()))))
         {
             return core::makeError(core::ErrorCode::DeviceError,
