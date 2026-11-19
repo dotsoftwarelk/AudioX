@@ -5,7 +5,7 @@
 | GoogleTest | v1.15.2 (FetchContent, git tag) | BSD-3-Clause | Unit/integration tests | Fetched at configure time; test-only, not shipped in the SDK or DAW. Keep the copyright notice if tests are redistributed. |
 | CMake | 3.25+ (build tool) | BSD-3-Clause | Build system | Not shipped. |
 | Ninja | optional | Apache-2.0 | Build backend | Not shipped. |
-| VST3 SDK | user-supplied | Steinberg proprietary | Phase 5 plugin hosting | **Never vendored.** User downloads from Steinberg; builds require `AXF_ENABLE_VST3=ON` plus a path provided locally. Do not commit SDK sources, headers or binaries. |
+| VST3 SDK | 3.8.1 (CI clone, commit `3cdf9ca`) | MIT (since VST 3.8) | Phase 5 plugin hosting | **Never vendored.** CI clones the official repo with `base`, `pluginterfaces`, `public.sdk` and `cmake` submodules into the runner temp dir, then sets `AXF_VST3_SDK_ROOT`. No SDK source or binary is installed with AXF. |
 | ASIO SDK | 2.3.4, downloaded by Windows CI from the official Steinberg zip | Dual: Steinberg proprietary **or** GPLv3 | Phase 3b low-latency backend | **Never vendored.** CI fetches into the runner temp dir and sets `AXF_ASIO_SDK_ROOT`. AXF uses the GPLv3 option; ASIO-enabled binaries must comply with GPLv3 unless a signed Steinberg proprietary agreement is obtained. ASIO is a trademark of Steinberg. |
 | fmt | not integrated | MIT | Candidate formatting library | Deferred; `std::ostream` used in Phase 0. Re-evaluate before adding. |
 | spdlog | not integrated | MIT | Candidate logger | Deferred; AXF owns its `ILogSink` abstraction. |

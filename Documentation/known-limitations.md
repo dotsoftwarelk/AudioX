@@ -1,4 +1,4 @@
-# Known limitations (Phase 3b)
+# Known limitations (Phase 5)
 
 - **No local Windows verification.** The development sandbox is Linux/GCC. MSVC was not available locally, but GitHub Actions `windows-latest` executed MSVC 19.51/19.52 Debug and Release builds with `/W4 /WX`; all Phase 0 CPU test suites passed (run `44523518416`), Phase 1 in run `44526375198`, and Phase 2 in run `44528029411`. This still does not prove WASAPI or ASIO hardware behaviour.
 - **WASAPI is implemented but not hardware-verified.** The Windows backend compiles in CI and the portable device→engine path is simulated; no physical endpoint has been exercised. See `Documentation/hardware/wasapi-test-plan.md`.
@@ -18,7 +18,21 @@
 - **The RT audit is diagnostic only.** It detects allocations on threads explicitly marked with `rt::ScopedAudioThread`; it does not prove the absence of locks, I/O or unbounded work, and the global override is test-only.
 - **Graph channel counts must match the engine configuration** at compile time; per-port channel negotiation is not implemented. MIDI connections are counted but not processed. Mixing has no clipping stage yet.
 - **DSP is limited** to silence, gain, biquad low-pass/high-pass/peaking EQ and constant-power panning. No compressor, limiter, convolution, reverb, resampling, oversampling or FFT yet. Biquad supports at most eight channels and coefficients are immutable; changing a filter requires republishing the graph. Frequency-response tests are numerical, not listening tests.
-- **No VST3 host.** Only interfaces and a test double exist. No plugin is scanned or loaded.
+- **VST3 is compiled but not plugin-verified.** Windows/Mac/Linux CI builds
+  the host and tests empty-directory scanning plus invalid descriptors, but no
+  real plugin binary was loaded. See `Documentation/hardware/vst3-test-plan.md`.
+- **VST3 hosting is deliberately narrow.** It supports the first audio
+  input/output bus, 32-bit float samples, note-on/off/aftertouch MIDI and
+  component/controller state blobs. There is no editor UI, parameter
+  automation, MIDI-CC mapping, note expression, side-chains or offline
+  rendering. Unsupported cases return errors instead of being faked.
+- **VST3 host is available on Windows and Linux only.** macOS needs the SDK's
+  Objective-C++ module and is not configured yet.
+- **VST3-enabled install packages need SDK support in the consumer.** AXF does
+  not install or export the third-party SDK targets, so a consumer that calls
+  `createVst3Host()` from an installed VST3-enabled `libaxf_plugins.a` must also
+  configure the SDK in its own build. Consumers that do not use the host link
+  normally, as verified by the standalone consumer test.
 - **Device change notifications are not synchronised with engine reconfiguration.** Listeners receive a hint and must re-enumerate on the control thread.
 - **File I/O is limited** to 16-bit PCM RIFF/WAVE and SMF format 0. No 24-bit/float WAV, AIFF, FLAC, multi-track SMF export, SysEx or tempo-map export. SMF frames must align with the PPQ/tempo grid for exact round-trips.
 - **GUI is not interactively verified.** A Win32/Direct2D/DirectWrite window and a portable scene graph exist, but no window was rendered in the sandbox. There is no input routing, high-DPI scaling, accessibility or animated layout. The application remains a diagnostic shell accepting `--info`, `--self-test`, `--list-devices`, `--help`.

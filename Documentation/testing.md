@@ -9,11 +9,12 @@ Scripts/run_tests.sh
 ```
 
 CI runs the same suite with MSVC Debug + Release (MSVC 19.51/19.52, `/W4 /WX`, generator-independent Ninja) and portable GCC Debug + Release, with warnings as errors. Verified on 2026-11-19: Phase 9 portable suites pass locally; Windows compilation and the full suite were verified in GitHub Actions on
-2026-11-19: Portable GCC `44613628281`, Windows MSVC `44613628173`, Quality
-`44613628147`, Sanitizers `44613628203` — all successful, with 12/12 enabled
-tests passing in both Release and Debug and in both sanitizer modes. Earlier
-Phase 9 IDs: Portable GCC `44549680971`, Windows MSVC `44549681036`, Quality
-`44549680864`. Earlier run IDs: Phase 8 `44544378901` / `44544379083` /
+2026-11-19: Portable GCC `44619637224`, Windows MSVC `44619637185`, Quality
+`44619637199`, Sanitizers `44619637383` — all successful, with 12/12 enabled
+tests passing in both Release and Debug and in both sanitizer modes. These runs
+include the ASIO and VST3 SDK builds. Earlier Phase 10 IDs: GCC `44613628281`,
+MSVC `44613628173`, Quality `44613628147`, Sanitizers `44613628203`; Phase 9
+IDs: GCC `44549680971`, MSVC `44549681036`, Quality `44549680864`. Earlier run IDs: Phase 8 `44544378901` / `44544379083` /
 `44544378963`; Phase 7 `44542472580` / `44542472445` / `44542472569`; Phase 6
 `44539857623` / `44539857549` / `44539857581`; Phase 4 `44536414501` /
 `44536414626` / `44536414437`; Phase 3 `44532804211` / `44532804371` /
@@ -28,10 +29,10 @@ Phase 9 IDs: Portable GCC `44549680971`, Windows MSVC `44549681036`, Quality
 | `axf_dsp_tests` | gain accuracy, channel integrity, denormal/NaN handling, biquad coefficient validation, Goertzel frequency response for LP/HP/peaking EQ, reset tail, constant-power panning |
 | `axf_midi_tests` | event encoding and bounded event buffer |
 | `axf_graph_tests` | validation, duplicate ports, cycle rejection, ordering, MIDI ports |
-| `axf_platform_tests` | version, media extensions, project format, plugin contract, track/clip model, serialisation round-trip and corrupt-input rejection |
+| `axf_platform_tests` | version, media extensions, project format, plugin contract, VST3 empty-directory scan and invalid descriptor rejection, track/clip model, serialisation round-trip and corrupt-input rejection |
 | `axf_file_io_tests` | WAV 16-bit PCM stereo round-trip and invalid input; SMF format 0 event round-trip with VLQ deltas and invalid input |
 | `axf_gui_tests` | widget draw geometry, text, meter scaling, dirty invalidation, clip culling, vertical layout, non-Windows window stub |
-| `axf_devices_tests` | device config and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
+| `axf_devices_tests` | device config, ASIO validation/factory availability and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
 | `axf_benchmarks` | SPSC throughput and gain throughput sanity check |
 
 ## Sanitizer jobs

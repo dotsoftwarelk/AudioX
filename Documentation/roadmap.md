@@ -8,7 +8,7 @@
 | 3 | WASAPI device abstraction, shared/exclusive backends, enumeration, device→engine callbacks, disconnect recovery | Simulated tests and MSVC/GCC Debug+Release green (Actions `44532804371`); ADR 0007. **Awaiting** the hardware report in `Documentation/hardware/wasapi-test-plan.md` |
 | 3b | ASIO backend (32-bit float, full duplex, one open device) | Real backend compiled with Steinberg SDK 2.3.4 on MSVC Debug/Release (`44617004902`); ADR 0014. Compatibility report with real ASIO drivers still pending; plan in `Documentation/hardware/asio-test-plan.md` |
 | 4 | DSP catalogue: biquad LP/HP/peaking EQ, constant-power panner, numerical response tests | Simulated DSP verification report; ADR 0008. No listening or hardware claim |
-| 5 | VST3 host | Compatibility matrix on real plugins |
+| 5 | VST3 host: scan/create/process/state with VST3 SDK 3.8.1 | Real host compiled with the MIT-licensed SDK on MSVC and GCC (`44619637185` / `44619637224`); ADR 0015. Compatibility matrix on real plugins still pending; plan in `Documentation/hardware/vst3-test-plan.md` |
 | 6 | MIDI and media file I/O: 16-bit WAV, SMF format 0 | Portable WAV sample and SMF event round-trip tests; ADR 0009 |
 | 7 | GUI framework: portable scene graph + Win32/Direct2D/DirectWrite window | Simulated draw-call tests; ADR 0010. Interactive checklist in `Documentation/hardware/gui-test-plan.md` still pending |
 | 8 | DAW control model: tracks, clips, mixer state, versioned serialisation | Round-trip and validation tests; ADR 0011 |
