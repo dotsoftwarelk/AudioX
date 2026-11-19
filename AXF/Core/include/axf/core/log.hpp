@@ -45,7 +45,17 @@ class Logger final
   public:
     static Logger& instance() noexcept;
 
+    /// Replaces all sinks with a single sink (nullptr restores the console).
     void setSink(ILogSink* sink) noexcept;
+    void addSink(ILogSink* sink) noexcept;
+    void removeSink(ILogSink* sink) noexcept;
+    void clearSinks() noexcept;
+
+    void setMinLevel(LogLevel level) noexcept;
+    [[nodiscard]] LogLevel minLevel() const noexcept;
+
+    /// Logging from an audio thread is a contract violation: it is dropped and
+    /// counted by the real-time audit instead of taking the logger mutex.
     void log(LogLevel level, std::string_view message,
              std::source_location location = std::source_location::current());
 

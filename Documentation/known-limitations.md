@@ -3,6 +3,7 @@
 - **No local Windows verification.** The development sandbox is Linux/GCC. MSVC was not available locally, but GitHub Actions `windows-latest` executed MSVC 19.51/19.52 Debug and Release builds with `/W4 /WX`; all 7 CPU test suites passed (run `44523518416`). This still does not prove WASAPI or ASIO hardware behaviour.
 - **No audio device backends.** WASAPI/ASIO interfaces exist; implementations are Phase 3. No audio can be recorded or played.
 - **No compiled real-time engine.** The graph is a control-thread description only. No callback has been instrumented or measured on real hardware.
+- **The RT audit is diagnostic only.** It detects allocations on threads explicitly marked with `rt::ScopedAudioThread`; it does not prove the absence of locks, I/O or unbounded work, and the global override is test-only.
 - **DSP is limited** to silence and gain utilities. No filters, EQ, dynamics, reverb, resampling or FFT yet.
 - **No VST3 host.** Only interfaces and a test double exist. No plugin is scanned or loaded.
 - **No file codecs or MIDI I/O.** Only metadata/format detection and event representation exist.

@@ -6,6 +6,7 @@
 #include <windows.h>
 #elif defined(__linux__)
 #include <pthread.h>
+#include <sys/resource.h>
 #endif
 
 namespace axf::core::thread
@@ -37,6 +38,62 @@ std::uint64_t currentThreadId() noexcept
 #else
     return 0;
 #endif
+}
+
+Result<void> setCurrentThreadPriority(ThreadPriority priority) noexcept
+{
+#if defined(_WIN32)
+    int value = THREAD_PRIORITY_NORMAL;
+    switch (priority)
+    {
+    case ThreadPriority::Low:
+        value = THREAD_PRIORITY_BELOW_NORMAL;
+        break;
+    case ThreadPriority::Normal:
+        value = THREAD_PRIORITY_NORMAL;
+        break;
+    case ThreadPriority::High:
+        value = THREAD_PRIORITY_ABOVE_NORMAL;
+        break;
+    }
+    return ::SetThreadPriority(::GetCurrentThread(), value) != FALSE
+               ? success()
+               : makeError(ErrorCode::ThreadError, "SetThreadPriority failed");
+#elif defined(__linux__)
+    int niceValue = 0;
+    switch (priority)
+    {
+    case ThreadPriority::Low:
+        niceValue = 5;
+        break;
+    case ThreadPriority::Normal:
+        niceValue = 0;
+        break;
+    case ThreadPriority::High:
+        niceValue = -5;
+        break;
+    }
+    return ::setpriority(PRIO_PROCESS, 0, niceValue) == 0
+               ? success()
+               : makeError(ErrorCode::ThreadError, "setpriority failed (check permissions)");
+#else
+    (void)priority;
+    return makeError(ErrorCode::Unsupported, "thread priority is not implemented on this OS");
+#endif
+}
+
+const char* threadPriorityName(ThreadPriority priority) noexcept
+{
+    switch (priority)
+    {
+    case ThreadPriority::Low:
+        return "low";
+    case ThreadPriority::Normal:
+        return "normal";
+    case ThreadPriority::High:
+        return "high";
+    }
+    return "unknown";
 }
 
 } // namespace axf::core::thread

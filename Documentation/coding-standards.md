@@ -19,7 +19,10 @@
 
 - Audio-thread functions are `noexcept`, allocation-free and lock-free.
 - Use `SpscRingBuffer` for trivially copyable payloads between one producer and one consumer.
-- Never log, format strings, open files or touch UI from the audio thread.
+- Never log, format strings, open files or touch UI from the audio thread. `Logger` drops records from marked audio threads and counts a violation.
+- Mark device-callback threads with `rt::ScopedAudioThread` so the audit can detect allocations.
+- Events posted from audio threads must be trivially copyable, <= 64 bytes and expose a static `typeId`.
+- Read configuration through `withSnapshot()`; never retain a returned view after the snapshot is destroyed.
 - Document thread affinity on every public API that has one.
 
 ## Review checklist

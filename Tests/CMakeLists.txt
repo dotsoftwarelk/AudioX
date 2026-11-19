@@ -7,12 +7,33 @@ function(axf_add_test NAME)
   add_test(NAME ${NAME} COMMAND ${NAME})
 endfunction()
 
-axf_add_test(axf_core_tests Unit/core_tests.cpp)
+axf_add_test(axf_core_tests
+  Unit/core_tests.cpp
+  Unit/event_tests.cpp
+  Unit/job_system_tests.cpp
+  Unit/config_tests.cpp
+  Unit/time_tests.cpp
+  Unit/memory_tests.cpp
+  Unit/thread_tests.cpp
+  Unit/log_tests.cpp)
 axf_add_test(axf_audio_tests Unit/audio_tests.cpp Audio/buffer_tests.cpp)
 axf_add_test(axf_dsp_tests DSP/dsp_tests.cpp)
 axf_add_test(axf_midi_tests Unit/midi_tests.cpp)
 axf_add_test(axf_graph_tests Integration/graph_tests.cpp Integration/device_config_tests.cpp)
 axf_add_test(axf_platform_tests Platform/platform_tests.cpp Plugins/plugin_tests.cpp)
+
+# Dedicated build of global operator new/delete instrumentation. It is linked
+# only into the audit test and is never installed with the AXF SDK.
+add_library(axf_rt_alloc_override STATIC
+  ${CMAKE_SOURCE_DIR}/AXF/Core/src/rt_alloc_override.cpp)
+target_include_directories(axf_rt_alloc_override PUBLIC
+  ${CMAKE_SOURCE_DIR}/AXF/Core/include)
+target_compile_features(axf_rt_alloc_override PUBLIC cxx_std_20)
+target_link_libraries(axf_rt_alloc_override PUBLIC AXF::Core)
+target_compile_options(axf_rt_alloc_override PRIVATE ${AXF_WARNING_FLAGS})
+
+axf_add_test(axf_rt_audit_tests Unit/rt_audit_tests.cpp)
+target_link_libraries(axf_rt_audit_tests PRIVATE axf_rt_alloc_override)
 
 add_executable(axf_benchmarks Benchmarks/benchmarks.cpp)
 target_link_libraries(axf_benchmarks PRIVATE AXF::Core AXF::Audio AXF::DSP AXF::Graph)

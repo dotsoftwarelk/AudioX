@@ -1,7 +1,10 @@
 #include "axf/core/log.hpp"
+#include "axf/core/rt.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <mutex>
+#include <vector>
 
 namespace axf::core
 {
@@ -26,14 +29,17 @@ class ConsoleSink final : public ILogSink
 
 struct Logger::Impl final
 {
-    std::mutex mutex;
+    mutable std::mutex mutex;
     ConsoleSink consoleSink;
-    ILogSink* sink{&consoleSink};
+    std::vector<ILogSink*> sinks;
+    LogLevel minimum{LogLevel::Trace};
 };
 
 Logger::Logger() : impl_(std::make_unique<Impl>())
 {
+    impl_->sinks.push_back(&impl_->consoleSink);
 }
+
 Logger::~Logger() = default;
 
 Logger& Logger::instance() noexcept
@@ -45,14 +51,71 @@ Logger& Logger::instance() noexcept
 void Logger::setSink(ILogSink* sink) noexcept
 {
     std::lock_guard<std::mutex> lock(impl_->mutex);
-    impl_->sink = sink == nullptr ? &impl_->consoleSink : sink;
+    impl_->sinks.clear();
+    impl_->sinks.push_back(sink == nullptr ? &impl_->consoleSink : sink);
+}
+
+void Logger::addSink(ILogSink* sink) noexcept
+{
+    if (sink == nullptr)
+    {
+        return;
+    }
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    if (std::find(impl_->sinks.begin(), impl_->sinks.end(), sink) == impl_->sinks.end())
+    {
+        impl_->sinks.push_back(sink);
+    }
+}
+
+void Logger::removeSink(ILogSink* sink) noexcept
+{
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    impl_->sinks.erase(std::remove(impl_->sinks.begin(), impl_->sinks.end(), sink),
+                       impl_->sinks.end());
+    if (impl_->sinks.empty())
+    {
+        impl_->sinks.push_back(&impl_->consoleSink);
+    }
+}
+
+void Logger::clearSinks() noexcept
+{
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    impl_->sinks.clear();
+    impl_->sinks.push_back(&impl_->consoleSink);
+}
+
+void Logger::setMinLevel(LogLevel level) noexcept
+{
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    impl_->minimum = level;
+}
+
+LogLevel Logger::minLevel() const noexcept
+{
+    std::lock_guard<std::mutex> lock(impl_->mutex);
+    return impl_->minimum;
 }
 
 void Logger::log(LogLevel level, std::string_view message, std::source_location location)
 {
-    const LogRecord record{level, message, location.file_name(), static_cast<int>(location.line())};
+    if (rt::isAudioThread())
+    {
+        rt::noteRealtimeViolation();
+        return;
+    }
+
+    LogRecord record{level, message, location.file_name(), static_cast<int>(location.line())};
     std::lock_guard<std::mutex> lock(impl_->mutex);
-    impl_->sink->write(record);
+    if (static_cast<std::uint8_t>(level) < static_cast<std::uint8_t>(impl_->minimum))
+    {
+        return;
+    }
+    for (ILogSink* sink : impl_->sinks)
+    {
+        sink->write(record);
+    }
 }
 
 const char* logLevelName(LogLevel level) noexcept

@@ -1,6 +1,6 @@
 # AXF is an independent SDK. Nothing in this directory may depend on AudioX/.
 axf_add_module(Platform ${CMAKE_CURRENT_SOURCE_DIR}/Platform ${CMAKE_CURRENT_SOURCE_DIR}/Platform/src/platform.cpp)
-axf_add_module(Core ${CMAKE_CURRENT_SOURCE_DIR}/Core      ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/error.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/log.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/thread.cpp)
+axf_add_module(Core ${CMAKE_CURRENT_SOURCE_DIR}/Core      ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/error.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/log.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/thread.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/rt.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/event.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/job_system.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/config.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/time.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/memory.cpp)
 axf_add_module(Audio ${CMAKE_CURRENT_SOURCE_DIR}/Audio     ${CMAKE_CURRENT_SOURCE_DIR}/Audio/src/audio.cpp)
 axf_add_module(Devices ${CMAKE_CURRENT_SOURCE_DIR}/Devices   ${CMAKE_CURRENT_SOURCE_DIR}/Devices/src/device.cpp)
 axf_add_module(DSP ${CMAKE_CURRENT_SOURCE_DIR}/DSP       ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/dsp.cpp)
