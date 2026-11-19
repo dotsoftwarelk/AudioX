@@ -3,7 +3,7 @@
 - Status: Accepted
 - Date: 2026-11-19
 - Phase: 4
-- Evidence: Numerical Goertzel response tests, RT allocation audit, GCC `local` (CI IDs to be appended after push)
+- Evidence: Numerical Goertzel response tests, RT allocation audit; GCC `44536414501`, MSVC `44536414626`, Quality `44536414437` (all green)
 
 ## Context
 
