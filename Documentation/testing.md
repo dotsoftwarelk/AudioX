@@ -24,6 +24,7 @@ Release and Debug. Phase 3 run IDs were `44532804211` / `44532804371` /
 | `axf_midi_tests` | event encoding and bounded event buffer |
 | `axf_graph_tests` | validation, duplicate ports, cycle rejection, ordering, MIDI ports |
 | `axf_platform_tests` | version, media extensions, project format, plugin contract |
+| `axf_file_io_tests` | WAV 16-bit PCM stereo round-trip and invalid input; SMF format 0 event round-trip with VLQ deltas and invalid input |
 | `axf_devices_tests` | device config and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
 | `axf_benchmarks` | SPSC throughput and gain throughput sanity check |
 

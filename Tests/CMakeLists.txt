@@ -38,6 +38,7 @@ target_link_libraries(axf_rt_audit_tests PRIVATE axf_rt_alloc_override)
 
 axf_add_test(axf_engine_tests Integration/engine_tests.cpp)
 axf_add_test(axf_devices_tests Integration/device_manager_tests.cpp Integration/device_engine_tests.cpp)
+axf_add_test(axf_file_io_tests Integration/media_roundtrip_tests.cpp Integration/midi_file_tests.cpp)
 
 add_executable(axf_benchmarks Benchmarks/benchmarks.cpp)
 target_link_libraries(axf_benchmarks PRIVATE AXF::Core AXF::Audio AXF::DSP AXF::Graph)

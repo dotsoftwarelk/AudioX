@@ -9,7 +9,7 @@
 | 3b | ASIO backend and device-format negotiation | Compatibility report with real ASIO drivers |
 | 4 | DSP catalogue: biquad LP/HP/peaking EQ, constant-power panner, numerical response tests | Simulated DSP verification report; ADR 0008. No listening or hardware claim |
 | 5 | VST3 host | Compatibility matrix on real plugins |
-| 6 | MIDI and media | Import/export round-trip tests |
+| 6 | MIDI and media file I/O: 16-bit WAV, SMF format 0 | Portable WAV sample and SMF event round-trip tests; ADR 0009 |
 | 7 | GUI framework (Direct2D/DirectWrite) | Rendering and interaction tests |
 | 8 | AudioX DAW subsystems | Feature-level integration tests |
 | 9 | Professional hardening | Long-duration, leak, thread-safety, hardware and performance reports |

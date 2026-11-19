@@ -6,8 +6,8 @@ axf_add_module(Devices ${CMAKE_CURRENT_SOURCE_DIR}/Devices ${CMAKE_CURRENT_SOURC
 axf_add_module(DSP ${CMAKE_CURRENT_SOURCE_DIR}/DSP       ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/dsp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/gain_processor.cpp ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/biquad.cpp ${CMAKE_CURRENT_SOURCE_DIR}/DSP/src/panner.cpp)
 axf_add_module(Graph ${CMAKE_CURRENT_SOURCE_DIR}/Graph     ${CMAKE_CURRENT_SOURCE_DIR}/Graph/src/graph.cpp)
 axf_add_module(Plugins ${CMAKE_CURRENT_SOURCE_DIR}/Plugins   ${CMAKE_CURRENT_SOURCE_DIR}/Plugins/src/plugin_host.cpp)
-axf_add_module(MIDI ${CMAKE_CURRENT_SOURCE_DIR}/MIDI      ${CMAKE_CURRENT_SOURCE_DIR}/MIDI/src/event.cpp)
-axf_add_module(Media ${CMAKE_CURRENT_SOURCE_DIR}/Media     ${CMAKE_CURRENT_SOURCE_DIR}/Media/src/audio_file.cpp)
+axf_add_module(MIDI ${CMAKE_CURRENT_SOURCE_DIR}/MIDI      ${CMAKE_CURRENT_SOURCE_DIR}/MIDI/src/event.cpp ${CMAKE_CURRENT_SOURCE_DIR}/MIDI/src/smf.cpp)
+axf_add_module(Media ${CMAKE_CURRENT_SOURCE_DIR}/Media     ${CMAKE_CURRENT_SOURCE_DIR}/Media/src/audio_file.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Media/src/wav_file.cpp)
 axf_add_module(Project ${CMAKE_CURRENT_SOURCE_DIR}/Project   ${CMAKE_CURRENT_SOURCE_DIR}/Project/src/project.cpp)
 axf_add_module(GUI ${CMAKE_CURRENT_SOURCE_DIR}/GUI       ${CMAKE_CURRENT_SOURCE_DIR}/GUI/src/theme.cpp)
 
