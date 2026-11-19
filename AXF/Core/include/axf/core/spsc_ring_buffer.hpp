@@ -12,6 +12,11 @@
 namespace axf::core
 {
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4324) // intentional cache-line padding on atomics
+#endif
+
 /// Single-producer / single-consumer lock-free queue with fixed capacity.
 /// Exactly one producer calls tryPush and exactly one consumer calls tryPop.
 /// No allocation, no locking, no system calls in either path.
