@@ -3,6 +3,7 @@
 #include "axf/core/export.hpp"
 #include "axf/core/types.hpp"
 
+#include <cmath>
 #include <cstdint>
 #include <string>
 
@@ -11,7 +12,7 @@ namespace axf::core::time
 
 constexpr double kDefaultPpq = 960.0;
 
-[[nodiscard]] constexpr bool isValidTempo(double bpm) noexcept
+[[nodiscard]] inline bool isValidTempo(double bpm) noexcept
 {
     return std::isfinite(bpm) && bpm > 0.0;
 }

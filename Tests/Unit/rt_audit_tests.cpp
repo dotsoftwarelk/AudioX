@@ -21,9 +21,13 @@ TEST(RtAudit, DetectsAllocationOnMarkedAudioThread)
     rt::setAllocationHook(countAllocation, &allocations);
     {
         rt::ScopedAudioThread guard;
-        int* value = new int(42);
+        // Direct operator calls cannot be elided by the optimiser, unlike a
+        // new-expression whose allocation may legally be omitted.
+        void* memory = ::operator new(sizeof(int));
+        int* value = static_cast<int*>(memory);
+        *value = 42;
         EXPECT_EQ(*value, 42);
-        delete value;
+        ::operator delete(value);
         rt::noteRealtimeViolation();
     }
     rt::setAllocationHook(nullptr, nullptr);
@@ -38,8 +42,8 @@ TEST(RtAudit, ControlThreadAllocationIsIgnored)
     rt::resetViolations();
     std::atomic<int> allocations{0};
     rt::setAllocationHook(countAllocation, &allocations);
-    int* value = new int(7);
-    delete value;
+    void* memory = ::operator new(sizeof(int));
+    ::operator delete(memory);
     rt::setAllocationHook(nullptr, nullptr);
     EXPECT_EQ(rt::violationCount(), 0U);
 }
