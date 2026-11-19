@@ -15,7 +15,7 @@ using namespace axf;
 
 namespace
 {
-const char* environmentValue(const char* name) noexcept
+[[maybe_unused]] const char* environmentValue(const char* name) noexcept
 {
 #if defined(_MSC_VER)
 #pragma warning(push)
