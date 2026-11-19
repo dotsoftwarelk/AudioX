@@ -50,7 +50,7 @@ const NodeDescriptor* Graph::findNode(NodeId id) const noexcept
 
 core::Result<NodeId> Graph::addNode(NodeKind kind, std::string name, std::uint16_t audioInputs,
                                     std::uint16_t audioOutputs, std::uint16_t midiInputs,
-                                    std::uint16_t midiOutputs)
+                                    std::uint16_t midiOutputs, core::ChannelCount portChannels)
 {
     if (nextId_ == kInvalidNodeId || nextId_ == std::numeric_limits<NodeId>::max())
     {
@@ -64,6 +64,7 @@ core::Result<NodeId> Graph::addNode(NodeKind kind, std::string name, std::uint16
     descriptor.audioOutputs = audioOutputs;
     descriptor.midiInputs = midiInputs;
     descriptor.midiOutputs = midiOutputs;
+    descriptor.portChannels = portChannels;
     nodes_.push_back(std::move(descriptor));
     return nodes_.back().id;
 }

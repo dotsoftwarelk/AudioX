@@ -69,11 +69,12 @@ struct NodeDescriptor final
     std::uint16_t audioOutputs{0};
     std::uint16_t midiInputs{0};
     std::uint16_t midiOutputs{0};
+    core::ChannelCount portChannels{2};
 };
 
 /// Control-thread graph description. There is deliberately no locking here:
 /// the audio engine consumes an immutable compiled snapshot built from this
-/// description (planned for Phase 2). Never mutate from the audio callback.
+/// description (implemented in Phase 2). Never mutate from the audio callback.
 class Graph final
 {
   public:
@@ -83,7 +84,8 @@ class Graph final
                                                std::uint16_t audioInputs,
                                                std::uint16_t audioOutputs,
                                                std::uint16_t midiInputs = 0,
-                                               std::uint16_t midiOutputs = 0);
+                                               std::uint16_t midiOutputs = 0,
+                                               core::ChannelCount portChannels = 2);
     [[nodiscard]] core::Result<void> removeNode(NodeId id);
     [[nodiscard]] core::Result<void> connect(PortId from, PortId to, MediaType media);
     [[nodiscard]] core::Result<void> disconnect(PortId from, PortId to);

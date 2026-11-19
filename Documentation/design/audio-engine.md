@@ -1,4 +1,4 @@
-# Audio engine design (Phase 2 target)
+# Audio engine design (Phase 2 implemented)
 
 ## Ownership
 
@@ -7,7 +7,17 @@
 - `AudioClock` and `Transport` use atomics for cross-thread observation; the audio thread advances the clock.
 - The future engine owns a compiled graph snapshot; nodes are owned by the snapshot, never by the callback.
 
-## Callback outline (planned)
+## Implemented in Phase 2
+
+`compileGraph()` produces an immutable `CompiledGraph` from a validated description.
+`AudioEngine::commit()` publishes it atomically; superseded graphs are retained
+for safe reclamation. `CompiledGraph::process()` clears preallocated buffers,
+copies device input into the input node, mixes resolved connections in
+topological order, invokes node processors and copies the output node to device
+buffers. The whole callback is wrapped in `rt::ScopedAudioThread` and verified
+allocation-free by the audit test.
+
+## Callback outline (current)
 
 1. Drain a bounded, preallocated control-event queue.
 2. If a new graph snapshot was published, swap the audio thread's local pointer.

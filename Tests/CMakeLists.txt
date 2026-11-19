@@ -32,8 +32,11 @@ target_compile_features(axf_rt_alloc_override PUBLIC cxx_std_20)
 target_link_libraries(axf_rt_alloc_override PUBLIC AXF::Core)
 target_compile_options(axf_rt_alloc_override PRIVATE ${AXF_WARNING_FLAGS})
 
-axf_add_test(axf_rt_audit_tests Unit/rt_audit_tests.cpp)
+axf_add_test(axf_rt_audit_tests Unit/rt_audit_tests.cpp
+  Integration/engine_audit_tests.cpp)
 target_link_libraries(axf_rt_audit_tests PRIVATE axf_rt_alloc_override)
+
+axf_add_test(axf_engine_tests Integration/engine_tests.cpp)
 
 add_executable(axf_benchmarks Benchmarks/benchmarks.cpp)
 target_link_libraries(axf_benchmarks PRIVATE AXF::Core AXF::Audio AXF::DSP AXF::Graph)

@@ -45,8 +45,8 @@ Rules:
 
 Graph and plugin topology changes follow: control thread builds a new immutable snapshot → publishes an atomic pointer at a buffer boundary → audio thread uses the old snapshot until done → control thread retires the old snapshot. This avoids locks and use-after-free in the callback.
 
-## Status (Phase 1)
+## Status (Phase 2)
 
-Implemented: Core types/errors/results/SPSC queue, typed events, job system, published configuration snapshots, time/tempo conversions, aligned buffer and pool allocator, real-time audit hooks, multi-sink logger, Audio buffers/clock/transport, Graph description and validation, DSP gain utility, MIDI event primitives, plugin/media/project/GUI interfaces, device config validation, app shell, installable CMake package, CI.
+Implemented: Core types/errors/results/SPSC queue, typed events, job system, published configuration snapshots, time/tempo conversions, aligned buffer and pool allocator, real-time audit hooks, multi-sink logger, Audio buffers/clock/transport, compiled graph and real-time engine skeleton, preallocated buffer pools, sample-accurate scheduler, latency propagation, Graph description and validation, DSP gain processor, MIDI event primitives, plugin/media/project/GUI interfaces, device config validation, app shell, installable CMake package, CI.
 
 Not implemented: real device backends, compiled real-time engine, DSP catalogue, VST3 host, file codecs, GUI rendering, DAW subsystems.

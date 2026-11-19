@@ -3,7 +3,8 @@
 | Phase | Scope | Exit evidence |
 |---|---|---|
 | 0 | Repo, CMake, core skeleton, CI, docs, tests | Done: 7 CPU test suites passed on GCC and MSVC Debug/Release; quality gates passed |
-| 1 | Full AXF.Core implementation (events, jobs, config, time, memory, RT audit) | **Current**: 8 CPU test suites pass on GCC and MSVC Debug/Release (Actions run `44526375198`); ADR 0005 and documented APIs |
+| 1 | Full AXF.Core implementation (events, jobs, config, time, memory, RT audit) | Done: 8 CPU test suites passed on GCC and MSVC Debug/Release (run `44526375198`); ADR 0005 |
+| 2 | Audio foundation: compiled graph, RT engine skeleton, buffers, scheduling | **Current**: 9 CPU test suites pass locally; ADR 0006; MSVC verification via CI |
 | 2 | Audio foundation: buffers, clock, graph compiler, RT engine skeleton | Integration tests, allocation audit |
 | 3 | WASAPI backend, then ASIO | Hardware test report on physical Windows machine |
 | 4 | DSP catalogue with frequency-response/numerical tests | DSP verification report |

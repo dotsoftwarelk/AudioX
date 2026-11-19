@@ -3,12 +3,12 @@
 **AudioX Framework (AXF)** is an independent, modular C++20 audio SDK.
 **AudioX DAW** is a separate application built on AXF's public API.
 
-> Status: **Phase 1 — AXF.Core infrastructure complete**.
-> AXF now includes typed events, a job system, published configuration snapshots,
-> musical/time conversions, aligned/pool memory utilities and real-time audit
-> hooks, on top of the Phase 0 foundation. This is still **not a DAW**:
-> recording, editing, mixing, VST3 hosting, WASAPI/ASIO backends and the GUI are
-> not implemented yet. See `Documentation/known-limitations.md`.
+> Status: **Phase 2 — audio foundation complete**.
+> AXF now has a compiled, immutable audio graph, a real-time engine skeleton,
+> preallocated buffer pools, sample-accurate event scheduling, latency
+> propagation and an allocation-free callback verified by the RT audit.
+> This is still **not a DAW**: no device backend, recording, editing, mixer UI,
+> VST3 hosting or GUI exists yet. See `Documentation/known-limitations.md`.
 
 ## Design goals
 
