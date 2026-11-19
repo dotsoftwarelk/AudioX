@@ -3,7 +3,7 @@
 - Status: Accepted
 - Date: 2026-11-19
 - Phase: 8
-- Evidence: portable track/clip/serialisation tests; CI IDs appended after verification.
+- Evidence: portable track/clip/serialisation tests; GCC `44544378901`, MSVC `44544379083`, Quality `44544378963` (all green).
 
 ## Context
 

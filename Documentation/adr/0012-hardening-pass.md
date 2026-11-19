@@ -3,7 +3,7 @@
 - Status: Accepted; first hardening pass complete, hardware/sanitizer reports pending
 - Date: 2026-11-19
 - Phase: 9
-- Evidence: 20,000 concurrent engine callbacks with 40 graph republishes, zero RT allocation violations; 300 deterministic malformed project inputs. CI IDs appended after verification.
+- Evidence: 20,000 concurrent engine callbacks with 40 graph republishes, zero RT allocation violations; 300 deterministic malformed project inputs. GCC `44549680971`, MSVC `44549681036`, Quality `44549680864` (all green).
 
 ## Context
 
