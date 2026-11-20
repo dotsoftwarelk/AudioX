@@ -6,7 +6,10 @@
 - Evidence: `Scripts/dev_all.sh full` reported PASS for dependency policy,
   native build/test, installed-consumer build/run, VST3 build/test plus real
   plug-in smoke, ASan+UBSan and TSan, and MinGW/Wine Windows build/test plus
-  installed-consumer run.
+  installed-consumer run. CI `7051425` was green in MSVC `44646732869`,
+  portable GCC `44646732800`, sanitizers `44646732850` and quality
+  `44646732783`; MSVC reported `100% tests passed out of 12` in Debug and
+  Release.
 
 ## Context
 

@@ -16,6 +16,6 @@
 | 10 | Sanitizer pass: ASan/UBSan/leak and TSan in CI, alignment/audit fixes | Local + CI sanitizer jobs green, 12/12 CPU tests in each mode; ADR 0013. Hardware/GUI and Windows-specific sanitizer reports still pending |
 | 11 | Bounded recording and control-thread recovery | Preallocated RT-safe recorder, device callback adapter, 16-bit PCM WAV output and local RT audit tests (ADR 0017); CI pending. No live input device exercised |
 
-| 12 | Unified local verification | `Scripts/dev_all.sh full` builds/installs/consumes/tests native, VST3, sanitizer and MinGW/Wine paths in one command; ADR 0018. MSVC CI and physical hardware remain separate gates |
+| 12 | Unified local verification | `Scripts/dev_all.sh full` builds/installs/consumes/tests native, VST3, sanitizer and MinGW/Wine paths in one command; ADR 0018. CI `7051425` green. MSVC CI and physical hardware remain separate gates |
 
 No phase is marked complete until its acceptance criteria are demonstrated by evidence.

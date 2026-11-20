@@ -53,7 +53,9 @@ AXF_VST3_EXPECT_GAIN=1 Scripts/dev_all.sh full
 
 Result: dependency policy, native build/test, native install/consumer, VST3
 build/test and real plug-in smoke, ASan+UBSan, TSan, MinGW/Wine build/test and
-Windows install/consumer all `PASS`. Each CTest target reported
+Windows install/consumer all `PASS`. The corresponding CI commit `7051425`
+was green in MSVC `44646732869`, portable GCC `44646732800`, sanitizers
+`44646732850` and quality `44646732783`. Each CTest target reported
 `100% tests passed out of 12` suites; the hardware placeholder stayed
 disabled. `Scripts/install_dev_deps.sh` installs the Debian/Ubuntu Wine and
 MinGW packages needed by the Windows pass.
