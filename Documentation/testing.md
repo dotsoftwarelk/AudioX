@@ -39,6 +39,31 @@ IDs: GCC `44549680971`, MSVC `44549681036`, Quality `44549680864`. Earlier run I
 | `axf_devices_tests` | device config, ASIO validation/factory availability and WASAPI restrictions, backend aggregation, default selection, listener notification, fake device→engine callback driving 0.8 gain with correct channel mapping, simulated disconnect |
 | `axf_benchmarks` | SPSC throughput and gain throughput sanity check |
 
+## Unified local workflow
+
+`Scripts/dev_all.sh full` is the one-command entry point used for local
+verification. It reports each pass as `PASS`, `FAIL` or `SKIP` and exits
+non-zero if any step failed. Verified on 2026-11-19 with:
+
+```bash
+AXF_VST3_SDK_ROOT=/path/to/vst3sdk \
+AXF_VST3_PLUGIN_PATH=/path/to/again-sample-accurate.vst3 \
+AXF_VST3_EXPECT_GAIN=1 Scripts/dev_all.sh full
+```
+
+Result: dependency policy, native build/test, native install/consumer, VST3
+build/test and real plug-in smoke, ASan+UBSan, TSan, MinGW/Wine build/test and
+Windows install/consumer all `PASS`. Each CTest target reported
+`100% tests passed out of 12` suites; the hardware placeholder stayed
+disabled. `Scripts/install_dev_deps.sh` installs the Debian/Ubuntu Wine and
+MinGW packages needed by the Windows pass.
+
+The Wine pass cross-compiles the real WASAPI and Win32/Direct2D sources and
+runs the Windows test binaries. It proves that those code paths compile and
+that the portable tests behave the same way on Windows APIs, but it does not
+prove MSVC-specific behaviour, real audio-device operation or interactive
+rendering. See `Documentation/adr/0018-unified-local-verification.md`.
+
 ## Sanitizer jobs
 
 Run both locally before pushing:

@@ -77,6 +77,25 @@ cmake -S Examples/minimal_app -B /tmp/app -DCMAKE_PREFIX_PATH=/path/to/prefix
 cmake --build /tmp/app
 ```
 
+## One-command development workflow
+
+From a fresh Debian/Ubuntu machine:
+
+```bash
+Scripts/install_dev_deps.sh   # sudo apt: wine64, wine32, mingw-w64
+Scripts/dev_all.sh full
+```
+
+`full` runs the dependency-policy check, native Release build/test, install
+plus standalone-consumer run, VST3 build/test when `AXF_VST3_SDK_ROOT` is set,
+the opt-in real plug-in smoke when `AXF_VST3_PLUGIN_PATH` is set, ASan+UBSan
+and TSan, and a MinGW-w64 Windows cross-build whose tests and installed
+consumer run under Wine. Individual passes are available as `quick`, `native`,
+`consumer`, `vst3`, `sanitizers` and `windows`. Builds live in
+`AXF_DEV_ROOT` (default `~/.cache/audiox-dev`). Optional steps print `SKIP`
+with a reason instead of silently pretending to pass. Wine/MinGW verifies
+Windows code paths locally but does not replace MSVC CI or hardware tests.
+
 ## Documentation
 
 - `Documentation/architecture/overview.md`

@@ -51,7 +51,7 @@ constexpr GUID kIidMMNotificationClient = {
 constexpr GUID kIeeeFloatSubtype = {
     0x00000001, 0x0000, 0x0010, {0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71}};
 
-bool isIeeeFloatFormat(const WAVEFORMATEX* format) noexcept
+[[maybe_unused]] bool isIeeeFloatFormat(const WAVEFORMATEX* format) noexcept
 {
     if (format == nullptr || format->wBitsPerSample != 32)
     {
@@ -124,7 +124,7 @@ class ComInitializer final
     HRESULT result_;
 };
 
-bool isDeviceLoss(HRESULT result) noexcept
+[[maybe_unused]] bool isDeviceLoss(HRESULT result) noexcept
 {
     return result == AUDCLNT_E_DEVICE_INVALIDATED || result == AUDCLNT_E_SERVICE_NOT_RUNNING ||
            result == AUDCLNT_E_RESOURCES_INVALIDATED ||
@@ -359,9 +359,13 @@ class WasapiDevice final : public IAudioDevice
             {
                 return core::makeError(core::ErrorCode::DeviceError, "GetMixFormat failed");
             }
-            isFloat_ = mixFormat->wBitsPerSample == 32 &&
-                       (mixFormat->wFormatTag == WAVE_FORMAT_IEEE_FLOAT ||
-                        mixFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE);
+            isFloat_ = isIeeeFloatFormat(mixFormat);
+            if (!isFloat_)
+            {
+                ::CoTaskMemFree(mixFormat);
+                return core::makeError(core::ErrorCode::Unsupported,
+                                       "WASAPI shared mix format is not 32-bit IEEE float");
+            }
             channels = static_cast<core::ChannelCount>(mixFormat->nChannels);
             result = client_->Initialize(AUDCLNT_SHAREMODE_SHARED, 0, 0, 0, mixFormat, nullptr);
             ::CoTaskMemFree(mixFormat);
